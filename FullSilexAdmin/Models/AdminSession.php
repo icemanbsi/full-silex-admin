@@ -1,4 +1,6 @@
 <?php
+namespace FullSilexAdmin\Models;
+
 use FullSilex\Models\BaseModel;
 
 /**

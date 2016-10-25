@@ -1,5 +1,9 @@
 <?php
+namespace FullSilexAdmin\Models\Repositories;
+
 use FullSilex\Helpers\UtilitiesHelper;
+use FullSilexAdmin\Models\Admin;
+use FullSilexAdmin\Models\AdminSession;
 
 /**
  * Created by PhpStorm.

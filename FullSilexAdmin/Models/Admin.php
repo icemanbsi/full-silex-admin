@@ -1,4 +1,7 @@
 <?php
+
+namespace FullSilexAdmin\Models;
+
 use App\Models\Traits\Authorizable;
 use FullSilex\Models\BaseModel;
 use FullSilex\Models\Traits\HasTimestamp;
