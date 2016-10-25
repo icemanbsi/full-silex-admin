@@ -26,7 +26,7 @@ class BaseController extends \FullSilex\Controllers\BaseController
 
     protected function isLogin(){
         if($this->app->getSession()->get("adminId") == null){
-            return $this->app->redirect($this->app->url("admins", array("method" => "login")));
+            return $this->app->redirect($this->app->url("admin/admins", array("method" => "login")));
         }
         else{
             return "";
