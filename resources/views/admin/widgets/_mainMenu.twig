@@ -1,6 +1,6 @@
 <ul class="menu-items">
     <li class="m-t-30 {% if activeMainMenu == "home" %}open{% endif %}">
-        <a href="{{ baseUrl('home/index') }}" {#class="detailed"#}>
+        <a href="{{ baseUrl('admin/home/index') }}" {#class="detailed"#}>
             <span class="title">Dashboard</span>
             {#<span class="details">234 notifications</span>#}
         </a>
@@ -8,7 +8,7 @@
     </li>
 
     <li class="{% if activeMainMenu == "admins" %}open{% endif %}">
-        <a href="{{ baseUrl('admins/index') }}">
+        <a href="{{ baseUrl('admin/admins/index') }}">
             <span class="title">Admins</span>
         </a>
         <span class="icon-thumbnail {% if activeMainMenu == "admins" %}bg-success{% endif %}"><i class="fa fa-user-md"></i></span>
