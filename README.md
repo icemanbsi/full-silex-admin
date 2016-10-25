@@ -18,6 +18,7 @@ you can copy the project template from `/vendor/icemanbsi/full-silex-admin/publi
 
 #### 3. Setting up the project
 - Go to `App/Application.php` at the first row after class declaration, add `use AdminApplication;`.
+- Add AdminControllerProvider in the setControllerProviders function.
 - Add setTemplateDirectories function in Application class. Your Application class now should be like :
 ```
 namespace App;
@@ -35,6 +36,7 @@ class Application extends \FullSilex\Application
 
     protected function setControllerProviders(){
         $this->mount("/", new DefaultControllerProvider());
+        $this->mount("/admin", new AdminControllerProvider());
     }
 
     public function setTemplateDirectories(){
@@ -42,6 +44,7 @@ class Application extends \FullSilex\Application
     }
 }
 ```
+- Create AdminControllerProvider class, extended from FullSilex\ControllerProvider
 
 
 #### 4. You are ready to go..

@@ -12,6 +12,6 @@ namespace FullSilexAdmin;
 trait AdminApplication
 {
     public function setAdminTemplateDirectories(){
-        return array($this->getRootDir() . '/../resources/views');
+        return array(__DIR__ . '/../resources/views');
     }
 }

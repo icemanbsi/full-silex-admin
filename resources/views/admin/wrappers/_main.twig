@@ -5,12 +5,12 @@
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
 <head>
     {% block headBefore %}{% endblock %}
-    {% include 'wrappers/items/_header.twig' %}
+    {% include "admin/wrappers/items/_header.twig" %}
     {% block head %}
         <title>Administrator Area</title>
     {% endblock %}
     {% block headAfter %}{% endblock %}
-    {% include 'wrappers/items/_mainScript.twig' %}
+    {% include "admin/wrappers/items/_mainScript.twig" %}
 </head>
 {% if route is not defined %}
     {% set route = "" %}
