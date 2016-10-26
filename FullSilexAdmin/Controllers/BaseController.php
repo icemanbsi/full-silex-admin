@@ -39,7 +39,7 @@ class BaseController extends \FullSilex\Controllers\BaseController
     protected function setAdditionalAssign(){
         $admin = $this->getUser();
         return array(
-            'adminUsername' => $admin->name,
+            'adminUsername' => $admin ? $admin->name : "",
             'adminImage' => '',
             'admin' => $admin
         );
