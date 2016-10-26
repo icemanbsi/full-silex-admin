@@ -2,6 +2,7 @@
 namespace FullSilexAdmin\Models;
 
 use FullSilex\Models\BaseModel;
+use FullSilex\Models\Traits\HasTimestamp;
 
 /**
  * Created by PhpStorm.
@@ -11,6 +12,11 @@ use FullSilex\Models\BaseModel;
  */
 abstract class AdminSession extends BaseModel
 {
+    use HasTimestamp;
+
+    static $before_create = array('time_beforeCreate');
+    static $before_save = array('time_beforeSave');
+
     public static $hiddenFields = array();
     public static $jsonFields = array();
     public static $imageFields = array();

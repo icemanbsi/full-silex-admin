@@ -8,6 +8,8 @@
 
 namespace FullSilexAdmin\Controllers;
 
+use \App\Models\Admin;
+
 
 class BaseController extends \FullSilex\Controllers\BaseController
 {
@@ -16,7 +18,7 @@ class BaseController extends \FullSilex\Controllers\BaseController
     protected function getUser(){
         $adminId = $this->app->getSession()->get("adminId");
         if($adminId) {
-            $this->user = \Admin::find_by_id($adminId);
+            $this->user = Admin::find_by_id($adminId);
         }
         return $this->user;
     }
@@ -37,7 +39,7 @@ class BaseController extends \FullSilex\Controllers\BaseController
     protected function setAdditionalAssign(){
         $admin = $this->getUser();
         return array(
-            'adminUsername' => $admin["name"],
+            'adminUsername' => $admin->name,
             'adminImage' => '',
             'admin' => $admin
         );
