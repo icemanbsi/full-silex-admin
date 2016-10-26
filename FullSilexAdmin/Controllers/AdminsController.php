@@ -11,6 +11,14 @@ namespace FullSilexAdmin\Controllers;
 
 class AdminsController extends CRUDController
 {
+    protected function beforeAction(){
+        if(in_array($this->currentAction, array("login", "loginProcess", "forgetPassword", "logout"))){
+            return "";
+        }
+        else{
+            return parent::beforeAction();
+        }
+    }
 
     public function login($error = null) {
         $email = $this->request->get("email");

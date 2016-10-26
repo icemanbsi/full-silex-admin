@@ -14,8 +14,9 @@ class BaseController extends \FullSilex\Controllers\BaseController
     protected $user;
 
     protected function getUser(){
-        if(empty($this->user)){
-            $this->user = \Admin::find_by_id($this->app->getSession()->get("adminId"));
+        $adminId = $this->app->getSession()->get("adminId");
+        if($adminId) {
+            $this->user = \Admin::find_by_id($adminId);
         }
         return $this->user;
     }
