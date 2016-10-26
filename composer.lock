@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "icemanbsi/full-silex",
-            "version": "v1.1.7",
+            "version": "v1.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/icemanbsi/full-silex.git",
-                "reference": "40ac0417e2e65dd6f04ab6f8676296acf5c4055d"
+                "reference": "e8d143772f447bf9a60db3afdd482d55dc9c9ae9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/icemanbsi/full-silex/zipball/40ac0417e2e65dd6f04ab6f8676296acf5c4055d",
-                "reference": "40ac0417e2e65dd6f04ab6f8676296acf5c4055d",
+                "url": "https://api.github.com/repos/icemanbsi/full-silex/zipball/e8d143772f447bf9a60db3afdd482d55dc9c9ae9",
+                "reference": "e8d143772f447bf9a60db3afdd482d55dc9c9ae9",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Several Base Classes to make full stack framework from Silex micro framework",
-            "time": "2016-08-24 03:16:57"
+            "time": "2016-10-25 12:34:14"
         },
         {
             "name": "monolog/monolog",
@@ -1135,16 +1135,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.26.1",
+            "version": "v1.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "a09d8ee17ac1cfea29ed60c83960ad685c6a898d"
+                "reference": "3c6c0033fd3b5679c6e1cb60f4f9766c2b424d97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/a09d8ee17ac1cfea29ed60c83960ad685c6a898d",
-                "reference": "a09d8ee17ac1cfea29ed60c83960ad685c6a898d",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/3c6c0033fd3b5679c6e1cb60f4f9766c2b424d97",
+                "reference": "3c6c0033fd3b5679c6e1cb60f4f9766c2b424d97",
                 "shasum": ""
             },
             "require": {
@@ -1157,7 +1157,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.26-dev"
+                    "dev-master": "1.27-dev"
                 }
             },
             "autoload": {
@@ -1192,7 +1192,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2016-10-05 18:57:41"
+            "time": "2016-10-25 19:17:17"
         }
     ],
     "packages-dev": [
