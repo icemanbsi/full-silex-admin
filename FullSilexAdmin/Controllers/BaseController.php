@@ -14,6 +14,7 @@ use \App\Models\Admin;
 class BaseController extends \FullSilex\Controllers\BaseController
 {
     protected $user;
+    protected $breadcrumbs = array();
 
     protected function getUser(){
         $adminId = $this->app->getSession()->get("adminId");
@@ -36,12 +37,18 @@ class BaseController extends \FullSilex\Controllers\BaseController
         }
     }
 
-    protected function setAdditionalAssign(){
+    protected function setDefaultAssign(){
         $admin = $this->getUser();
-        return array(
+        $assign = array(
             'adminUsername' => $admin ? $admin->name : "",
             'adminImage' => '',
             'admin' => $admin
         );
+
+        if (!empty($this->breadcrumbs)) {
+            $assign['breadcrumbs'] = $this->breadcrumbs;
+        }
+
+        return array_merge(parent::setDefaultAssign(), $assign);
     }
 }
