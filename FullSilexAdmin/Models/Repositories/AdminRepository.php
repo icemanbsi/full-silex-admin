@@ -17,7 +17,7 @@ class AdminRepository extends \FullSilex\Models\Repositories\BaseRepository
     public function login($login, $password)
     {
         $admin = Admin::first(array(
-            "conditions" => array("email=? AND status=?", Admin::STATUS_ACTIVE, $login)
+            "conditions" => array("email=? AND status=?", $login, Admin::STATUS_ACTIVE)
         ));
         if (!empty($admin)) {
             if ($admin->password_hash == UtilitiesHelper::toHash($password, $admin->salt, $this->app->config('globalSalt'))) {

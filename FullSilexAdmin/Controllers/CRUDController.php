@@ -19,8 +19,8 @@ class CRUDController extends BaseController
     protected $title = 'instance'; // Page Title
 
     // Form tpl files
-    protected $addFormTpl = '_addForm';
-    protected $editFormTpl = '_editForm';
+    protected $addFormTpl = '/admin/widgets/crud/add/_addForm';
+    protected $editFormTpl = '/admin/widgets/crud/add/_addForm';
     protected $deleteFormTpl = '/admin/widgets/crud/delete/_deleteForm';
     protected $indexTpl = '/admin/widgets/crud/_index';
 
@@ -70,7 +70,7 @@ class CRUDController extends BaseController
      * Use lowercase.
      */
     protected function model() {
-        return 'model';
+        return 'Model';
     }
 
     /**
@@ -78,8 +78,8 @@ class CRUDController extends BaseController
      * @return array
      */
     protected function listData() {
-        $sql = "SELECT * FROM {$this->model()}";
-        $instances = ModelHelper::objectsToArray( \FullSilex\Models\BaseModel::find_by_sql($sql) );
+        $sql = "SELECT * FROM " . call_user_func(array($this->model(), "table_name"));
+        $instances = ModelHelper::objectsToArray( call_user_func(array($this->model(), "find_by_sql"), $sql) );
         $instanceRows = array();
         if (!empty($instances)) {
             foreach ($instances as $instanceArray) {
