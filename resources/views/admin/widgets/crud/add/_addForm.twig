@@ -1,7 +1,10 @@
 {% if action is not defined %}
     {% set action = "create" %}
 {% endif %}
-{% set controllerName = "controller" %}
+{% if controllerName is not defined %}
+    {% set controllerName = "controllers" %}
+{% endif %}
+{% set instance = attribute(_context, instanceName) %}
 <form class="validate" method="POST" action="{{ baseUrl("admin/" ~ controllerName ~ "/" ~ action ) }}">
     {% if not isAjax %}
         <div class="affix-wrapper">
@@ -10,7 +13,7 @@
                     <div class="panel-body ">
                         <div class="row">
                             <div class="col-sm-6">
-                                {% block name = "topLeftActionBar" %}
+                                {% block topLeftActionBar %}
                                     {% if action == "create" %}
                                         <a href="{{ baseUrl("admin/" ~ controllerName ~ "/images") }}" class="btn btn-primary"><i class="fa fa-image"></i> {{ "Image Manager"|trans }}</a>
                                     {% endif %}
@@ -18,10 +21,10 @@
                             </div>
                             <div class="col-sm-6 text-right">
 
-                                {% block name = "topRightActionBar" %}
-                                    <input type="hidden" name="{{ instanceName }}[is_active]" id="isActive" value="{{ {{ instanceName }}.is_active }}"/>
+                                {% block topRightActionBar %}
+                                    <input type="hidden" name="{{ instanceName }}[is_active]" id="isActive" value="{{ instance.is_active }}"/>
                                     {% if action == "create" %}
-                                        {% if {{ instanceName }}.is_active %}
+                                        {% if instance.is_active %}
                                             <a class="btn btn-danger" id="btnSuspend"><i class="pg-power m-r-10"></i>Suspend</a>
                                         {% else %}
                                             <a class="btn btn-complete" id="btnActive"><i class="pg-power m-r-10"></i>Activate</a>
@@ -39,6 +42,33 @@
     {% endif %}
 
     {% if action == "create" %}
-        <input name="{{ instanceName }}[id]" type="hidden" value="{{ {{ instanceName }}.id }}">
+        <input name="{{ instanceName }}[id]" type="hidden" value="{{ instance.id }}">
     {% endif %}
+
+    {% block formContent %}
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="panel-title">{{ "General Info"|trans }}</div>
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="form-group form-group-default required">
+                            <label for="{{ instanceName }}_name">{{ "Name"|trans }}</label>
+                            <input name="{{ instanceName }}[name]" id="{{ instanceName }}_name" type="text" class="form-control validate[required,maxSize[255]]" value="{{ instance.name|escape }}}"/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ instanceName }}_description">{{ "Description"|trans }}</label>
+                            <textarea name="{{ instanceName }}[description]" id="{{ instanceName }}_description" class="form-control" rows="15">{{ instance.description|escape }}</textarea>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    {% endblock %}
 </form>

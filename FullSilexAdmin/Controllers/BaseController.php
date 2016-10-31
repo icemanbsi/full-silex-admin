@@ -42,7 +42,7 @@ class BaseController extends \FullSilex\Controllers\BaseController
         $assign = array(
             'adminUsername' => $admin ? $admin->name : "",
             'adminImage' => '',
-            'admin' => $admin
+            'admin' => $admin ? $admin->to_array() : array()
         );
 
         if (!empty($this->breadcrumbs)) {

@@ -162,7 +162,7 @@ class CRUDController extends BaseController
 
     // Please do not override these functions, unless you know the risk.
     public function add() {
-        $this->breadcrumbs[] = array('url' => $this->app->url($this->indexPath), 'name' => ucfirst($this->title) . ' List');
+        $this->breadcrumbs[] = array('url' => $this->app->url($this->indexPath["route"], array("method" => $this->indexPath["method"])), 'name' => ucfirst($this->title) . ' List');
         $this->breadcrumbs[] = array('url' => '', 'name' => 'New '.$this->title);
         $instance = $this->findInstance(false);
         $instance = $this->setInstanceAttributes($instance);

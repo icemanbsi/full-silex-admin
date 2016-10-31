@@ -17,8 +17,8 @@ class AdminsController extends CRUDController
     protected $title = 'admin'; // Page Title
 
     // Form tpl files
-    protected $addFormTpl = '/admin/widgets/crud/add/_addForm';
-    protected $editFormTpl = '/admin/widgets/crud/add/_addForm';
+    protected $addFormTpl = '_form';
+    protected $editFormTpl = '_form';
     protected $deleteFormTpl = '/admin/widgets/crud/delete/_deleteForm';
     protected $indexTpl = '/admin/widgets/crud/_index';
 

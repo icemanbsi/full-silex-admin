@@ -1,0 +1,26 @@
+<div class="modal-dialog {% block customClass %}{% endblock %}">
+    <div class="modal-content-wrapper">
+        <div class="modal-content">
+            <div class="modal-header clearfix text-left">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="pg-close fs-14"></i>
+                </button>
+                {% block dialogHeader %}{% endblock %}
+            </div>
+            <div class="modal-body">
+                {% include "admin/widgets/_ajaxAlerts.tpl" %}
+                <div class="panel panel-transparent">
+                    <div class="panel-body">
+                        {% block dialogContent %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-master-light p-t-25">
+                {% block dialogButtons %}
+                <a class="btn btn-primary" onclick="return bootstrapModalSubmit();"><i class="pg-save m-r-10"></i>Save Changes</a>
+                <a class="btn" data-dismiss="modal"><i class="pg-close m-r-10"></i>Close</a>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+    <!-- /.modal-content -->
+</div>
