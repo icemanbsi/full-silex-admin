@@ -7,3 +7,30 @@
 
 {% block topRightActionBar %}
 {% endblock %}
+
+{% block formContent %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title">{{ "General Info"|trans }}</div>
+                </div>
+                <div class="panel-body">
+
+                    <div class="form-group form-group-default required">
+                        <label for="{{ instanceName }}_name">{{ "Name"|trans }}</label>
+                        <input name="{{ instanceName }}[name]" id="{{ instanceName }}_name" type="text" class="form-control validate[required,maxSize[255]]" value="{{ instance.name|escape }}"/>
+                    </div>
+
+                    {#<div class="form-group">#}
+                    {#<label for="{{ instanceName }}_description">{{ "Description"|trans }}</label>#}
+                    {#<textarea name="{{ instanceName }}[description]" id="{{ instanceName }}_description" class="form-control" rows="15">{{ instance.description|escape }}</textarea>#}
+                    {#</div>#}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

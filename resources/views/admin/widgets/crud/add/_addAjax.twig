@@ -3,5 +3,5 @@
     <h3 class="text-primary bold"><i class="fa fa-bookmark m-r-15"></i>New {{ title|capitalize }}</h3>
 {% endblock %}
 {% block dialogContent %}
-    {{ form }}
+    {{ form|raw }}
 {% endblock %}

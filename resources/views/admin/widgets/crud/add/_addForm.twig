@@ -30,6 +30,8 @@
                                             <a class="btn btn-complete" id="btnActive"><i class="pg-power m-r-10"></i>Activate</a>
                                         {% endif %}
                                     {% endif %}
+                                {% endblock %}
+                                {% block submitActionBar %}
                                     <button class="btn btn-primary" id="submitForm" type="submit"><i class="pg-save m-r-10"></i>Submit</button>
                                 {% endblock %}
 
@@ -57,7 +59,7 @@
 
                         <div class="form-group form-group-default required">
                             <label for="{{ instanceName }}_name">{{ "Name"|trans }}</label>
-                            <input name="{{ instanceName }}[name]" id="{{ instanceName }}_name" type="text" class="form-control validate[required,maxSize[255]]" value="{{ instance.name|escape }}}"/>
+                            <input name="{{ instanceName }}[name]" id="{{ instanceName }}_name" type="text" class="form-control validate[required,maxSize[255]]" value="{{ instance.name|escape }}"/>
                         </div>
 
                         <div class="form-group">

@@ -167,12 +167,12 @@ class CRUDController extends BaseController
         $instance = $this->findInstance(false);
         $instance = $this->setInstanceAttributes($instance);
         $assigns = $this->setupAssigns($instance);
-        $form = $this->render($this->addFormTpl, $assigns);
+        $assigns["form"] = $this->render($this->addFormTpl, $assigns);
         if ($this->app->isAjax()) {
-            return $this->render($this->addAjaxTpl, array('form' => $form));
+            return $this->render($this->addAjaxTpl, $assigns);
         }
         else {
-            return $this->render($this->addNoAjaxTpl, array('form' => $form));
+            return $this->render($this->addNoAjaxTpl, $assigns);
         }
     }
 
