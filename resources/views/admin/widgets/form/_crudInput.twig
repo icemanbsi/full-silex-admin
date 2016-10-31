@@ -2,33 +2,28 @@
 
 options :
     - columnName (req)      : to set field name
-    - description (opt)     : to set custom description or field name
+    - title (opt)           : title or field name
     - required (opt)        : if this field is required
     - type (opt)            : available type is text(default), textarea, datepicker, timepicker
     - readOnly (opt)        : if this field is readonly
 
 #}
-<div class="row">
-    {% if description is not defined or description is empty %}
-        {% set description = columnName|capitalize %}
+{% if title is not defined or title is empty %}
+    {% set title = columnName|capitalize %}
+{% endif %}
+
+{% set instance = attribute(_context, instanceName) %}
+{% set value = attribute(instance, columnName) %}
+<div class="form-group form-group-default {% if required is defined %}required{% endif %} {% if type is defined and type == "timepicker" %}bootstrap-timepicker input-group{% endif %}">
+    <label for="{{ instanceName }}_{{ columnName }}">{{ title }}</label>
+    {% if type is defined and type == "textarea" %}
+        <textarea name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if required is defined %}validate[required]{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %}>{{ value|escape }}</textarea>
+    {% else %}
+        <input type="text" name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" value="{{ value|escape }}" class="form-control {% if required is defined %}validate[required,maxSize[255]]{% endif %} {% if type is defined and type == "datepicker" %}datepicker{%  elseif type is defined and type == "timepicker" %}timepicker{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
     {% endif %}
-
-    {% set instance = attribute(_context, instanceName) %}
-    {% set value = attribute(instance, columnName) %}
-    <div class="col-sm-12">
-        <div class="form-group form-group-default {% if required is defined %}required{% endif %} {% if type is defined and type == "timepicker" %}bootstrap-timepicker input-group{% endif %}">
-            <label for="{{ instanceName }}_{{ columnName }}">{{ description }}</label>
-            {% if type is defined and type == "textarea" %}
-                <textarea name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if required is defined %}validate[required]{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %}>{{ value|escape }}</textarea>
-            {% else %}
-                <input type="text" name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" value="{{ value|escape }}" class="form-control {% if required is defined %}validate[required,maxSize[255]]{% endif %} {% if type is defined and type == "datepicker" %}datepicker{%  elseif type is defined and type == "timepicker" %}timepicker{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
-            {% endif %}
-            {% if type is defined and type == "timepicker" %}
-                <span class="input-group-addon">
-                    <i class="pg-clock"></i>
-                </span>
-            {% endif %}
-        </div>
-
-    </div>
+    {% if type is defined and type == "timepicker" %}
+        <span class="input-group-addon">
+            <i class="pg-clock"></i>
+        </span>
+    {% endif %}
 </div>

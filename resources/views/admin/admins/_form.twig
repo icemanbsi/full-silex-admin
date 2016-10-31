@@ -18,10 +18,7 @@
                 </div>
                 <div class="panel-body">
 
-                    <div class="form-group form-group-default required">
-                        <label for="{{ instanceName }}_name">{{ "Name"|trans }}</label>
-                        <input name="{{ instanceName }}[name]" id="{{ instanceName }}_name" type="text" class="form-control validate[required,maxSize[255]]" value="{{ instance.name|escape }}"/>
-                    </div>
+                    {% include "admin/widgets/form/_crudInput.twig" with {columnName: name, required : 1} %}
 
                     {#<div class="form-group">#}
                     {#<label for="{{ instanceName }}_description">{{ "Description"|trans }}</label>#}
