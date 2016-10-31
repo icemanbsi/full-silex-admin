@@ -1,0 +1,44 @@
+{% if action is not defined %}
+    {% set action = "create" %}
+{% endif %}
+{% set controllerName = "controller" %}
+<form class="validate" method="POST" action="{{ baseUrl("admin/" ~ controllerName ~ "/" ~ action ) }}">
+    {% if not isAjax %}
+        <div class="affix-wrapper">
+            <nav class="affix-top">
+                <div class="panel panel-default">
+                    <div class="panel-body ">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                {% block name = "topLeftActionBar" %}
+                                    {% if action == "create" %}
+                                        <a href="{{ baseUrl("admin/" ~ controllerName ~ "/images") }}" class="btn btn-primary"><i class="fa fa-image"></i> {{ "Image Manager"|trans }}</a>
+                                    {% endif %}
+                                {% endblock %}
+                            </div>
+                            <div class="col-sm-6 text-right">
+
+                                {% block name = "topRightActionBar" %}
+                                    <input type="hidden" name="{{ instanceName }}[is_active]" id="isActive" value="{{ {{ instanceName }}.is_active }}"/>
+                                    {% if action == "create" %}
+                                        {% if {{ instanceName }}.is_active %}
+                                            <a class="btn btn-danger" id="btnSuspend"><i class="pg-power m-r-10"></i>Suspend</a>
+                                        {% else %}
+                                            <a class="btn btn-complete" id="btnActive"><i class="pg-power m-r-10"></i>Activate</a>
+                                        {% endif %}
+                                    {% endif %}
+                                    <button class="btn btn-primary" id="submitForm" type="submit"><i class="pg-save m-r-10"></i>Submit</button>
+                                {% endblock %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    {% endif %}
+
+    {% if action == "create" %}
+        <input name="{{ instanceName }}[id]" type="hidden" value="{{ {{ instanceName }}.id }}">
+    {% endif %}
+</form>

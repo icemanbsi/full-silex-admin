@@ -16,6 +16,7 @@ class CRUDController extends BaseController
 // These variables MUST be overridden in inherited class!
     // --START-- //
     protected $instanceName = 'instance'; // Instance name used in parameter prefix i.e. 'instance' of $this->params['instance']['attributeName']
+    protected $title = 'instance'; // Page Title
 
     // Form tpl files
     protected $addFormTpl = '_addForm';
@@ -119,6 +120,12 @@ class CRUDController extends BaseController
     // END - Minimum overriding requirements //
 
 
+    // Override these functions if needed
+
+    protected function setupAdditionalAssigns($instance) {
+        return array();
+    }
+
     public function index() {
         if($this->app->isAjax()){
             return json_encode(array('aaData' => $this->listData()));
@@ -130,7 +137,8 @@ class CRUDController extends BaseController
                 'columns' => $this->columns,
                 'thAttributes' => $this->thAttributes,
                 'columnDefs' => $this->columnDefs,
-                'instanceName' => $this->instanceName
+                'instanceName' => $this->instanceName,
+                'title' => $this->title
             ));
         }
     }
@@ -149,18 +157,22 @@ class CRUDController extends BaseController
     }
 
 
+    // ------- end of override these function if needed
+
+
+    // Please do not override these functions, unless you know the risk.
     public function add() {
-        $this->breadcrumbs[] = array('url' => $this->app->getRouter()->getUrl($this->indexPath), 'name' => ucfirst($this->instanceName) . ' List');
-        $this->breadcrumbs[] = array('url' => '', 'name' => 'New '.$this->instanceName);
+        $this->breadcrumbs[] = array('url' => $this->app->url($this->indexPath), 'name' => ucfirst($this->title) . ' List');
+        $this->breadcrumbs[] = array('url' => '', 'name' => 'New '.$this->title);
         $instance = $this->findInstance(false);
         $instance = $this->setInstanceAttributes($instance);
-        $this->setupAssigns($instance);
-        $form = $this->fetch($this->addFormTpl);
+        $assigns = $this->setupAssigns($instance);
+        $form = $this->render($this->addFormTpl, $assigns);
         if ($this->app->isAjax()) {
-            $this->render($this->addAjaxTpl, array('form' => $form));
+            return $this->render($this->addAjaxTpl, array('form' => $form));
         }
         else {
-            $this->render($this->addNoAjaxTpl, array('form' => $form));
+            return $this->render($this->addNoAjaxTpl, array('form' => $form));
         }
     }
 
@@ -182,5 +194,81 @@ class CRUDController extends BaseController
 
     public function destroy() {
 
+    }
+
+    protected function decideIdSource($post) {
+        $id = '';
+        if ($post) {
+            if (!empty($this->request->get($this->instanceName)) && !empty($this->request->get($this->instanceName)['id'])) {
+                $id = $this->request->get($this->instanceName)['id'];
+            }
+        }
+        else {
+            if (!empty($this->request->get('id'))) {
+                $id = $this->request->get('id');
+            }
+        }
+        return $id;
+    }
+
+    protected function findInstance($post = false) {
+        $id = $this->decideIdSource($post);
+
+        $instance = null;
+        if (!empty($id)) {
+            $instance = call_user_func(array($this->model(), "find_by_id"), $id);
+            if (empty($instance)) {
+                return null;
+            }
+        }
+        else {
+            if (!in_array($this->currentAction, array('edit', 'update', 'delete', 'destroy'))) {
+                $instance = $this->app->createModel($this->model());
+            }
+        }
+        return $instance;
+    }
+
+    /**
+     * @param \Full-Silex\Models\BaseModel $instance
+     * @return mixed
+     */
+    protected function setInstanceAttributes($instance) {
+        if (!empty($this->request->get($this->instanceName))) {
+            $instance->update_attributes($this->request->get($this->instanceName));
+        }
+        return $instance;
+    }
+
+    protected function setupInstanceAssigns($instance) {
+        if (empty($instance)) {
+            $this->app->redirect($this->app->url("admin/home", array("method" => "notFound")));
+        }
+
+        $currentAction = $this->currentAction;
+        if ($currentAction == 'edit') {
+            $action = 'update';
+        }
+        elseif ($currentAction == 'add') {
+            $action = 'create';
+        }
+        else {
+            $action = $currentAction;
+        }
+
+        return array(
+            $this->instanceName => $instance->to_array(),
+            'instanceName' => $this->instanceName,
+            'title' => $this->title,
+            'isAjax' => $this->app->isAjax(),
+            'action' => $action
+        );
+    }
+
+    protected function setupAssigns($instance) {
+        return array_merge(
+            $this->setupInstanceAssigns($instance),
+            $this->setupAdditionalAssigns($instance)
+        );
     }
 }
