@@ -1,6 +1,6 @@
 {% extends "admin/wrappers/_main.twig" %}
 {% block header %}
-    <title>{$instanceName}</title>
+    <title>{{ title|capitalize }}</title>
 {% endblock %}
 {% block content %}
     {% include "admin/widgets/_alerts.twig" %}
@@ -37,12 +37,12 @@
             </div>
 
 
-            {% if (dragField is defined and dragField is not empty) or (isSortable is defined and isSortable is not empty AND isSortable) %}
+            {% if (dragField is defined and dragField is not empty) or (isSortable is defined and isSortable is not empty and isSortable == true) %}
                 {% set sortableTable = "sortableTable" %}
             {% else %}
                 {% set sortableTable = "" %}
             {% endif %}
-            {% if dataTableServerSide is defined and dataTableServerSide is not empty and dataTableServerSide %}
+            {% if dataTableServerSide is defined and dataTableServerSide is not empty and dataTableServerSide == true %}
                 {% set dtServerSide = "serverSide" %}
             {% else %}
                 {% set dtServerSide = "" %}
@@ -72,7 +72,7 @@
         var _columnDefs = {{ columnDefs|raw }};
         {% endif %}
 
-        {% if (dragField is defined and dragField is not empty) or (isSortable is defined and isSortable is not empty and isSortable) %}
+        {% if (dragField is defined and dragField is not empty) or (isSortable is defined and isSortable is not empty and isSortable == true) %}
         var _reorderUrl = "{{ baseUrl(reorderPath.route, { "method" : reorderPath.method }) }}";
         var _sortableColumnIndex = {% if sortableIdColumnIndex is not defined or sortableIdColumnIndex == "" %}0{% else %}{{ sortableIdColumnIndex }}{% endif %};
         {% endif %}

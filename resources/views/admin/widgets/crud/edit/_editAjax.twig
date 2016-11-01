@@ -1,0 +1,7 @@
+{% extends "admin/wrappers/_formDialog.twig" %}
+{% block dialogHeader %}
+    <h3 class="text-primary bold"><i class="fa fa-bookmark m-r-15"></i>Edit {{ title|capitalize }}</h3>
+{% endblock %}
+{% block dialogContent %}
+    {{ form|raw }}
+{% endblock %}

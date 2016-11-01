@@ -1,0 +1,27 @@
+{% extends "admin/wrappers/_main.twig" %}
+{% block header %}
+    <title>Edit {{ title|capitalize }}</title>
+{% endblock %}
+{% block content %}
+    {% include "admin/widgets/_alerts.twig" %}
+    <div class="panel panel-transparent">
+        <div class="panel-heading">
+            <h2 class="text-primary bold"><i class="fa fa-bookmark m-r-15"></i>Edit {{ title|capitalize }}</h2>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="panel-body">
+            {{ form|raw }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+
+    {% if errorAttributes is defined and errorAttributes is not empty %}
+        <script type="text/javascript">
+            var errors = {{ errorAttributes|json_encode|raw }};
+            attachErrors(errors, '{{ instance }}');
+        </script>
+    {% endif %}
+{% endblock %}

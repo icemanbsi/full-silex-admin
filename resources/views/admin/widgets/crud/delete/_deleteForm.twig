@@ -1,0 +1,20 @@
+{% set instance = attribute(_context, instanceName) %}
+<form method="POST" action="{{ baseUrl(destroyPath.route, {"method" : destroyPath.method}) }}">
+<input type="hidden" name="{{ instanceName }}[id]" value="{{ instance.id }}"/>
+<div class="block-fluid">
+    <div class="row">
+        <div class="col-sm-12 largerText">
+            <h4 class="bold">Delete this {{ title }}?</h4>
+        </div>
+    </div>
+    {% if not isAjax %}
+    <div class="row m-t-30">
+        <div class="col-sm-12">
+            <div class="toolbar bottom TAR">
+                <button class="btn btn-danger" id="submitForm" type="submit">Delete</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+</form>

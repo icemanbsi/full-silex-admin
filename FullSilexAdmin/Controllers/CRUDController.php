@@ -70,7 +70,7 @@ class CRUDController extends BaseController
      * Use lowercase.
      */
     protected function model() {
-        return 'Model';
+        return 'App\Models\Model';
     }
 
     /**
@@ -177,23 +177,186 @@ class CRUDController extends BaseController
     }
 
     public function edit() {
-
+        $this->breadcrumbs[] = array('url' => $this->app->url($this->indexPath["route"], array("method" => $this->indexPath["method"])), 'name' => ucfirst($this->title) . ' List');
+        $this->breadcrumbs[] = array('url' => '', 'name' => 'Edit '.$this->title);
+        $instance = $this->findInstance(false);
+        if (is_null($instance)) {
+            $assigns = array(
+                'error' => $this->app->trans('instanceNotFound', array('model' => $this->title)),
+                'errorAttributes' => array(),
+                'instance' => $this->instanceName
+            );
+        }
+        else {
+            $instance = $this->setInstanceAttributes($instance);
+            $assigns = $this->setupAssigns($instance);
+        }
+        $assigns["form"] = $this->render($this->editFormTpl, $assigns);
+        if ($this->app->isAjax()) {
+            $this->render($this->editAjaxTpl, $assigns);
+        }
+        else {
+            $this->render($this->editNoAjaxTpl, $assigns);
+        }
     }
 
     public function delete() {
-
+        $instance = $this->findInstance(false);
+        if (is_null($instance)) {
+            $assigns = array(
+                'error' => $this->app->trans('instanceNotFound', array('model' => $this->title)),
+                'errorAttributes' => array(),
+                'instance' => $this->instanceName
+            );
+        }
+        else {
+            $assigns = $this->setupAssigns($instance);
+            if ($this->destroyPath != null) {
+                $assigns["destroyPath"] = $this->destroyPath;
+            }
+        }
+        $assigns["form"] = $this->render($this->deleteFormTpl, $assigns);
+        if ($this->app->isAjax()) {
+            $this->render($this->deleteAjaxTpl, $assigns);
+        }
+        else {
+            $this->render($this->deleteNoAjaxTpl, $assigns);
+        }
     }
 
     public function create() {
+        $this->breadcrumbs[] = array('url' => $this->app->url($this->indexPath["route"], array("method" => $this->indexPath["method"])), 'name' => ucfirst($this->title) . ' List');
+        $this->breadcrumbs[] = array('url' => '', 'name' => 'New '.$this->title);
 
+        if (!empty($this->request->get($this->instanceName)) && !empty($this->request->get($this->instanceName)['id'])) {
+            // For upload images, where image upload will return id to form.
+            $instance = $this->findInstance(true);
+        }
+        else {
+            $instance = $this->findInstance(false);
+        }
+
+        $instance = $this->setInstanceAttributes($instance);
+        if ($instance->errors->is_empty()) {
+            try {
+                $instance->save();
+            }
+            catch (\Exception $e) {
+                $message = $e->getMessage();
+                // When message is unrelated to instance validation, instance
+                // has no error, but error message is not empty.
+                if (!empty($message) && $instance->errors->is_emtpy()) {
+                    $instance->add("", $message);
+                }
+                $this->app->log("error happened when updating from CRUDController (model ".$this->model()."): " . $message);
+//                $this->app->debugBacktrace();
+                $this->app->log("params are: " . $this->request->getContent());
+            }
+        }
+
+        if ($instance->errors->is_empty()) {
+            $this->afterCreateSuccess($instance);
+            if ($this->successTarget == 'edit') {
+                return $this->successAction($this->app->trans('created'), $this->app->url($this->editPath["route"], array("method" => $this->editPath["method"], 'id' => $instance->id)));
+            }
+            else {
+                return $this->successAction($this->app->trans('created'), $this->app->url($this->indexPath["route"], array("method" => $this->indexPath["method"])));
+            }
+        }
+        else {
+            if ($this->app->isAjax()) {
+                return $this->displayInstanceErrors($instance, $this->instanceName, $this->addAjaxTpl);
+            }
+            else {
+                return $this->displayInstanceErrors($instance, $this->instanceName, $this->addNoAjaxTpl);
+            }
+        }
     }
 
     public function update() {
+        $this->breadcrumbs[] = array('url' => $this->app->url($this->indexPath["route"], array("method" => $this->indexPath["method"])), 'name' => ucfirst($this->title) . ' List');
+        $this->breadcrumbs[] = array('url' => '', 'name' => 'Edit '.$this->title);
+        $instance = $this->findInstance(true);
+        $error = true;
 
+        if (is_null($instance)) {
+            $errorMessage = $this->app->trans('instanceNotFound', array('model' => $this->title));
+            if ($this->app->isAjax()) {
+                return $this->displayErrors($errorMessage, $this->editAjaxTpl, $this->model());
+            }
+            else {
+                return $this->displayErrors($errorMessage, $this->editNoAjaxTpl, $this->model());
+            }
+        }
+        else {
+            $instance = $this->setInstanceAttributes($instance);
+
+            if ($instance->errors->is_empty()) {
+                try {
+                    $this->afterUpdateSuccess($instance);
+                    $instance->save();
+
+                    $error = false;
+
+                    if ($this->successTarget == 'edit') {
+                        return $this->successAction($this->app->trans('updated'), $this->app->url($this->editPath["route"], array("method" => $this->editPath["method"], 'id' => $instance->id)));
+                    }
+                    else {
+                        return $this->successAction($this->app->trans('updated'), $this->app->url($this->indexPath["route"], array("method" => $this->indexPath["method"])));
+                    }
+                }
+                catch (\Exception $e) {
+                    $message = $e->getMessage();
+                    // When message is unrelated to instance validation, instance
+                    // has no error, but error message is not empty.
+                    if (!empty($message) && $instance->errors->is_emtpy()) {
+                        $instance->add("", $message);
+                    }
+                    $this->app->log("error happened when updating from CRUDController (model ".$this->model()."): " . $message);
+//                    $this->app->debugBacktrace();
+                    $this->app->log("params are: " . print_r($this->getParams(), true));
+                }
+            }
+            if ($error) {
+                if ($this->app->isAjax()) {
+                    return $this->displayInstanceErrors($instance, $this->instanceName, $this->editAjaxTpl);
+                }
+                else {
+                    return $this->displayInstanceErrors($instance, $this->instanceName, $this->editNoAjaxTpl);
+                }
+            }
+        }
     }
 
     public function destroy() {
-
+        $instance = $this->findInstance(true);
+//        $instance = $this->setInstanceAttributes($instance);
+        $error = true;
+        if ($instance->errors->is_empty()) {
+            try {
+                $this->app->log("trying to delete data..");
+                $instance->delete();
+                $error = false;
+                return $this->successAction($this->app->trans('deleted'), $this->app->url($this->indexPath["route"], array("method" => $this->indexPath["method"])));
+            }
+            catch (\Exception $e) {
+                $message = $e->getMessage();
+                // When message is unrelated to instance validation, instance
+                // has no error, but error message is not empty.
+                if (!empty($message) && $instance->errors->is_emtpy()) {
+                    $instance->add("", $message);
+                }
+                $this->app->log("Cannot delete data : " . $e->getMessage());
+            }
+        }
+        if ($error) {
+            if ($this->app->isAjax()) {
+                return $this->displayInstanceErrors($instance, $this->instanceName, $this->deleteAjaxTpl);
+            }
+            else {
+                return $this->displayInstanceErrors($instance, $this->instanceName, $this->deleteNoAjaxTpl);
+            }
+        }
     }
 
     protected function decideIdSource($post) {
@@ -256,13 +419,19 @@ class CRUDController extends BaseController
             $action = $currentAction;
         }
 
-        return array(
+        $assigns = array(
             $this->instanceName => $instance->to_array(),
             'instanceName' => $this->instanceName,
             'title' => $this->title,
             'isAjax' => $this->app->isAjax(),
             'action' => $action
         );
+
+        if ($this->destroyPath != null) {
+            $assigns['destroyPath'] = $this->destroyPath;
+        }
+
+        return $assigns;
     }
 
     protected function setupAssigns($instance) {
@@ -270,5 +439,46 @@ class CRUDController extends BaseController
             $this->setupInstanceAssigns($instance),
             $this->setupAdditionalAssigns($instance)
         );
+    }
+
+    protected function displayInstanceErrors($modelInstance, $instanceName, $template) {
+        $errorObjects = array();
+        foreach($modelInstance->errors->errors() as $key => $value){
+            $errorObjects[$key] = implode(' ', $value);
+        }
+        return $this->displayErrors($modelInstance->errorMessages(), $template, $instanceName, $modelInstance, $errorObjects);
+    }
+
+    protected function displayErrors($message, $template = '', $instanceName = '', $modelInstance = null, $errorObjects = array())
+    {
+        if ($this->app->isAjax()) {
+            return json_encode(array(
+                'error' => $message,
+                'errorAttributes' => $errorObjects,
+                'instance' => $instanceName
+            ));
+        }
+        else {
+            $formTemplate = array();
+            if($template == $this->addNoAjaxTpl || $template == $this->addAjaxTpl) $formTemplate = $this->addFormTpl;
+            else if($template == $this->editNoAjaxTpl || $template == $this->editAjaxTpl) $formTemplate = $this->editFormTpl;
+            else if($template == $this->deleteNoAjaxTpl || $template == $this->deleteAjaxTpl) $formTemplate = $this->deleteFormTpl;
+
+            if(!empty($modelInstance)){
+                $assigns = $this->setupAssigns($modelInstance);
+            }
+
+            if(!empty($formTemplate)){
+                $assigns["form"] = $this->render($formTemplate, $assigns);
+            }
+
+            $assigns = array_merge($assigns, array(
+                'error' => $message,
+                'errorAttributes' => $errorObjects,
+                'instance' => $instanceName
+            ));
+
+            return $this->render($template, $assigns);
+        }
     }
 }

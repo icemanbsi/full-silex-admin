@@ -40,15 +40,34 @@ class BaseController extends \FullSilex\Controllers\BaseController
     protected function setDefaultAssign(){
         $admin = $this->getUser();
         $assign = array(
-            'adminUsername' => $admin ? $admin->name : "",
-            'adminImage' => '',
-            'admin' => $admin ? $admin->to_array() : array()
+            "adminUsername" => $admin ? $admin->name : "",
+            "adminImage" => "",
+            "admin" => $admin ? $admin->to_array() : array(),
+            "numDisplayedRows" => $this->getNumDisplayedRows()
         );
 
         if (!empty($this->breadcrumbs)) {
-            $assign['breadcrumbs'] = $this->breadcrumbs;
+            $assign["breadcrumbs"] = $this->breadcrumbs;
         }
 
         return array_merge(parent::setDefaultAssign(), $assign);
+    }
+
+    protected function successAction($message, $url) {
+        if ($this->app->isAjax()) {
+            return json_encode(array('message' => $message));
+        }
+        else {
+            $this->setMessage($message);
+            return $this->app->redirect( $url );
+        }
+    }
+
+    protected function setNumDisplayedRows($numRows){
+        setcookie("numDisplayedRows", $numRows, time() + 86400, "/");
+    }
+
+    protected function getNumDisplayedRows(){
+        return !empty($_COOKIE["numDisplayedRows"]) ? $_COOKIE["numDisplayedRows"] : 10;
     }
 }

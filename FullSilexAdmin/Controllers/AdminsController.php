@@ -48,8 +48,8 @@ class AdminsController extends CRUDController
     // protected $sortableIdColumnIndex = 0;
     // -- END - SORTABLE -- //
 
-    public $columns = array('column', 'names');
-    public $thAttributes = array(); // Class sort_asc or sort_desc can be used to set default sorting.
+    public $columns = array('Email', 'Name', 'Status', 'Created At', '');
+    public $thAttributes = array('', '', '', '', '', 'class="sort_desc"', ''); // Class sort_asc or sort_desc can be used to set default sorting.
     public $columnDefs = '[]'; // Use this to handle columns' behaviours, doc: http://www.datatables.net/usage/columns
 
     /**
@@ -57,7 +57,7 @@ class AdminsController extends CRUDController
      * Use lowercase.
      */
     protected function model() {
-        return 'admin';
+        return 'App\Models\Admin';
     }
 
     /**
@@ -72,7 +72,10 @@ class AdminsController extends CRUDController
             foreach ($instances as $instanceArray) {
                 $instanceRow = array(
                     // List your field names here
-                    $instanceArray['field_name'],
+                    $instanceArray["email"],
+                    $instanceArray["name"],
+                    $instanceArray["status"],
+                    $instanceArray["created_at"],
 
                     $this->listActions($instanceArray)
                 );
