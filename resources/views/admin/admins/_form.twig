@@ -19,11 +19,10 @@
                 <div class="panel-body">
 
                     {% include "admin/widgets/form/_crudInput.twig" with {columnName: "name", required : 1} %}
-
-                    {#<div class="form-group">#}
-                    {#<label for="{{ instanceName }}_description">{{ "Description"|trans }}</label>#}
-                    {#<textarea name="{{ instanceName }}[description]" id="{{ instanceName }}_description" class="form-control" rows="15">{{ instance.description|escape }}</textarea>#}
-                    {#</div>#}
+                    {% include "admin/widgets/form/_crudInput.twig" with {columnName: "email", required : 1} %}
+                    {% include "admin/widgets/form/_crudInput.twig" with {columnName: "password", type:"password", required : 1} %}
+                    {% include "admin/widgets/form/_crudInput.twig" with {columnName: "password_confirmation", title: "Password Confirmation", type:"password", required : 1} %}
+                    {% include "admin/widgets/form/_crudSelect.twig" with {columnName: "status", required : 1, options: statuses} %}
 
                 </div>
             </div>

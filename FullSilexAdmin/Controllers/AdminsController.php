@@ -10,6 +10,7 @@ namespace FullSilexAdmin\Controllers;
 
 
 use FullSilex\Helpers\ModelHelper;
+use FullSilexAdmin\Models\Admin;
 
 class AdminsController extends CRUDController
 {
@@ -105,6 +106,24 @@ class AdminsController extends CRUDController
     protected function afterUpdateSuccess($instance)
     {
 
+    }
+
+    protected function setupAdditionalAssigns($instance) {
+
+        $statuses = array(
+            array(
+                "value" => Admin::STATUS_ACTIVE,
+                "text" => $this->app->trans("Active")
+            ),
+            array(
+                "value" => Admin::STATUS_INACTIVE,
+                "text" => $this->app->trans("Inactive")
+            )
+        );
+
+        return array(
+            "statuses" => $statuses
+        );
     }
 
     protected function beforeAction(){

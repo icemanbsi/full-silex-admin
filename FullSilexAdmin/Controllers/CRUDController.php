@@ -146,7 +146,7 @@ class CRUDController extends BaseController
     protected function listActions($instanceArray)
     {
         $actions = '<div class="text-right">
-                    <a title="View" href="'.$this->app->url($this->editPath["route"], array('method' => $this->editPath['method'], 'id' => $instanceArray['id'])).'"><span class="fa fa-pencil"></span></a>
+                    <a title="Edit" href="'.$this->app->url($this->editPath["route"], array('method' => $this->editPath['method'], 'id' => $instanceArray['id'])).'"><span class="fa fa-pencil"></span></a>
 					<a title="Delete" href="'.$this->app->url($this->deletePath["route"], array('method' => $this->deletePath['method'], 'id' => $instanceArray['id'])).'" data-toggle="dialog"><span class="fa fa-trash"></span></a>
 					</div>';
         if (!is_null($this->dragField)) {
@@ -443,10 +443,10 @@ class CRUDController extends BaseController
 
     protected function displayInstanceErrors($modelInstance, $instanceName, $template) {
         $errorObjects = array();
-        foreach($modelInstance->errors->errors() as $key => $value){
+        foreach($modelInstance->errors->to_array() as $key => $value){
             $errorObjects[$key] = implode(' ', $value);
         }
-        return $this->displayErrors($modelInstance->errorMessages(), $template, $instanceName, $modelInstance, $errorObjects);
+        return $this->displayErrors($modelInstance->errorMessages('<br/>'), $template, $instanceName, $modelInstance, $errorObjects);
     }
 
     protected function displayErrors($message, $template = '', $instanceName = '', $modelInstance = null, $errorObjects = array())

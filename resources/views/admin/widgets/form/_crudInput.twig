@@ -4,7 +4,7 @@ options :
     - columnName (req)      : to set field name
     - title (opt)           : title or field name
     - required (opt)        : if this field is required
-    - type (opt)            : available type is text(default), textarea, datepicker, timepicker
+    - type (opt)            : available type is text(default), textarea, datepicker, timepicker, password
     - readOnly (opt)        : if this field is readonly
 
 #}
@@ -18,6 +18,8 @@ options :
     <label for="{{ instanceName }}_{{ columnName }}">{{ title }}</label>
     {% if type is defined and type == "textarea" %}
         <textarea name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if required is defined %}validate[required]{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %}>{{ value|escape }}</textarea>
+    {% elseif type == "password" %}
+        <input type="password" name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" value="{{ value|escape }}" class="form-control {% if required is defined %}validate[required,maxSize[255]]{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
     {% else %}
         <input type="text" name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" value="{{ value|escape }}" class="form-control {% if required is defined %}validate[required,maxSize[255]]{% endif %} {% if type is defined and type == "datepicker" %}datepicker{%  elseif type is defined and type == "timepicker" %}timepicker{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
     {% endif %}

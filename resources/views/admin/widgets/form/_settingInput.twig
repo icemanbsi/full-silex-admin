@@ -4,7 +4,7 @@ Options :
     - title (req)           : title or field name
     - settingName (req)     : to set field name
     - required (opt)        : if this field is required
-    - type (opt)            : available type is text(default), datepicker, timepicker
+    - type (opt)            : available type is text(default), datepicker, timepicker, password
     - readOnly (opt)        : if this field is readonly
 
 
@@ -12,7 +12,12 @@ Options :
 {% set setting = attribute(_context, settingName) %}
 <div class="form-group form-group-default {% if required %}required{% endif %} {% if type is defined and type == "timepicker" %}bootstrap-timepicker input-group{% endif %}">
     <label for="{{ settingName }}">{% if title is defined and title is not empty %}{{ title|capitalize }}{% else %}{{ setting.description|capitalize }}{% endif %}</label>
-    <input name="{{ settingName }}" id="{{ settingName }}" class="form-control {% if required is defined %}validate[required,maxSize[255]]{% endif %} {% if type is defined and type == "datepicker" %}datepicker{%  elseif type is defined and type == "timepicker" %}timepicker{% endif %}" value="{{ setting.value|escape }}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
+    {% if type == "password" %}
+        <input type="password" name="{{ settingName }}" id="{{ settingName }}" class="form-control {% if required is defined %}validate[required,maxSize[255]]{% endif %}" value="{{ setting.value|escape }}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
+    {% else %}
+        <input type="text" name="{{ settingName }}" id="{{ settingName }}" class="form-control {% if required is defined %}validate[required,maxSize[255]]{% endif %} {% if type is defined and type == "datepicker" %}datepicker{%  elseif type is defined and type == "timepicker" %}timepicker{% endif %}" value="{{ setting.value|escape }}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
+    {% endif %}
+
     {% if type is defined and type == "timepicker" %}
         <span class="input-group-addon">
             <i class="pg-clock"></i>
