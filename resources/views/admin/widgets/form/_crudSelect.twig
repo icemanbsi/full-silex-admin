@@ -12,8 +12,8 @@ Options :
 <div class="form-group form-group-default {%  if required is defined %}required{% if %}">
     <label for="{{ instanceName }}_{{ columnName }}">{% if title is defined and title is not empty %}{{ title|capitalize }}{% else %}{{ columnName|capitalize }}{% endif %}</label>
     <select name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control cs-select cs-skin-slide" data-init-plugin="cs-select">
-        {% foreach option in options %}
+        {% for option in options %}
         <option value="{{ option.value }}" {% if option.value == value %}selected{% endif %}>{{ option.text }}</option>
-        {% endforeach %}
+        {% endfor %}
     </select>
 </div>
