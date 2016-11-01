@@ -126,6 +126,20 @@ class AdminsController extends CRUDController
         );
     }
 
+    protected function setInstanceAttributes($instance) {
+        if (!empty($this->request->get($this->instanceName))) {
+            $attributes = $this->request->get($this->instanceName);
+            unset($attributes["password"]);
+            unset($attributes["password_confirmation"]);
+            $instance->update_attributes($attributes);
+
+            $instance->setPassword($this->request->get($this->instanceName)["password"]);
+            $instance->setPasswordConfirmation($this->request->get($this->instanceName)["password_confirmation"]);
+            $instance->save();
+        }
+        return $instance;
+    }
+
     protected function beforeAction(){
         if(in_array($this->currentAction, array("login", "loginProcess", "forgetPassword", "logout"))){
             return "";

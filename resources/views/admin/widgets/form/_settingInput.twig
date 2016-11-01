@@ -12,7 +12,7 @@ Options :
 {% set setting = attribute(_context, settingName) %}
 <div class="form-group form-group-default {% if required %}required{% endif %} {% if type is defined and type == "timepicker" %}bootstrap-timepicker input-group{% endif %}">
     <label for="{{ settingName }}">{% if title is defined and title is not empty %}{{ title|capitalize }}{% else %}{{ setting.description|capitalize }}{% endif %}</label>
-    {% if type == "password" %}
+    {% if type is defined and type == "password" %}
         <input type="password" name="{{ settingName }}" id="{{ settingName }}" class="form-control {% if required is defined %}validate[required,maxSize[255]]{% endif %}" value="{{ setting.value|escape }}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
     {% else %}
         <input type="text" name="{{ settingName }}" id="{{ settingName }}" class="form-control {% if required is defined %}validate[required,maxSize[255]]{% endif %} {% if type is defined and type == "datepicker" %}datepicker{%  elseif type is defined and type == "timepicker" %}timepicker{% endif %}" value="{{ setting.value|escape }}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
