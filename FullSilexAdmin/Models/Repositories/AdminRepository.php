@@ -28,7 +28,7 @@ class AdminRepository extends \FullSilex\Models\Repositories\BaseRepository
                 $adminId = $admin->id;
                 $sessionId = session_id();
 
-                $adminsession = $this->app->createModel('adminsession', array("admin_id" => $adminId, "session_id" => $sessionId));
+                $adminsession = $this->app->createModel('adminSession', array("admin_id" => $adminId, "session_id" => $sessionId));
                 $adminsession->save();
                 $this->app->getSession()->set('adminId', $admin->id);
 

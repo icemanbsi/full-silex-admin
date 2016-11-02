@@ -1,7 +1,7 @@
 {#
 
 Options :
-    - title (req)           : title or field name
+    - customTitle (req)     : title or field name
     - settingName (req)     : to set field name
     - required (opt)        : if this field is required
     - type (opt)            : available type is text(default), datepicker, timepicker, password
@@ -9,9 +9,9 @@ Options :
 
 
 #}
-{% set setting = attribute(_context, settingName) %}
+{% set setting = (attribute(_context, settingName) is defined ? attribute(_context, settingName) : "") %}
 <div class="form-group form-group-default {% if required %}required{% endif %} {% if type is defined and type == "timepicker" %}bootstrap-timepicker input-group{% endif %}">
-    <label for="{{ settingName }}">{% if title is defined and title is not empty %}{{ title|capitalize }}{% else %}{{ setting.description|capitalize }}{% endif %}</label>
+    <label for="{{ settingName }}">{% if customTitle is defined and customTitle is not empty %}{{ customTitle|capitalize }}{% else %}{{ setting.description|capitalize }}{% endif %}</label>
     {% if type is defined and type == "password" %}
         <input type="password" name="{{ settingName }}" id="{{ settingName }}" class="form-control {% if required is defined %}validate[required,maxSize[255]]{% endif %}" value="{{ setting.value|escape }}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
     {% else %}

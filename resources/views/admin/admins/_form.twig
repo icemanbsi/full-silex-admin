@@ -20,8 +20,8 @@
 
                     {% include "admin/widgets/form/_crudInput.twig" with {columnName: "name", required : 1} %}
                     {% include "admin/widgets/form/_crudInput.twig" with {columnName: "email", required : 1} %}
-                    {% include "admin/widgets/form/_crudInput.twig" with {columnName: "password", type:"password", required : 1} %}
-                    {% include "admin/widgets/form/_crudInput.twig" with {columnName: "password_confirmation", title: "Password Confirmation", type:"password", required : 1} %}
+                    {% include "admin/widgets/form/_crudInput.twig" with {columnName: "password", type:"password"} %}
+                    {% include "admin/widgets/form/_crudInput.twig" with {columnName: "password_confirmation", title: "Password Confirmation", type:"password"} %}
                     {% include "admin/widgets/form/_crudSelect.twig" with {columnName: "status", required : 1, options: statuses} %}
 
                 </div>

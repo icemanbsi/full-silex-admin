@@ -43,8 +43,8 @@
         </div>
     {% endif %}
 
-    {% if action == "create" %}
-        <input name="{{ instanceName }}[id]" type="hidden" value="{{ instance.id }}">
+    {% if action != "create" %}
+        <input name="{{ instanceName }}[id]" type="hidden" value="{{ (instance.id is defined ? instance.id : "") }}">
     {% endif %}
 
     {% block formContent %}

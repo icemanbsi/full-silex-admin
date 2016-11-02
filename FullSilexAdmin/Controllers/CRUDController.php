@@ -181,11 +181,11 @@ class CRUDController extends BaseController
         $this->breadcrumbs[] = array('url' => '', 'name' => 'Edit '.$this->title);
         $instance = $this->findInstance(false);
         if (is_null($instance)) {
-            $assigns = array(
+            $assigns = array_merge($this->setupAssigns($instance), array(
                 'error' => $this->app->trans('instanceNotFound', array('model' => $this->title)),
                 'errorAttributes' => array(),
                 'instance' => $this->instanceName
-            );
+            ));
         }
         else {
             $instance = $this->setInstanceAttributes($instance);
@@ -193,10 +193,10 @@ class CRUDController extends BaseController
         }
         $assigns["form"] = $this->render($this->editFormTpl, $assigns);
         if ($this->app->isAjax()) {
-            $this->render($this->editAjaxTpl, $assigns);
+            return $this->render($this->editAjaxTpl, $assigns);
         }
         else {
-            $this->render($this->editNoAjaxTpl, $assigns);
+            return $this->render($this->editNoAjaxTpl, $assigns);
         }
     }
 
@@ -404,9 +404,9 @@ class CRUDController extends BaseController
     }
 
     protected function setupInstanceAssigns($instance) {
-        if (empty($instance)) {
-            $this->app->redirect($this->app->url("admin/home", array("method" => "notFound")));
-        }
+//        if (empty($instance)) {
+//            return $this->app->redirect($this->app->url("admin/home", array("method" => "notFound")));
+//        }
 
         $currentAction = $this->currentAction;
         if ($currentAction == 'edit') {
@@ -420,11 +420,13 @@ class CRUDController extends BaseController
         }
 
         $assigns = array(
-            $this->instanceName => $instance->to_array(),
+            $this->instanceName => empty($instance) ? array() : $instance->to_array(),
             'instanceName' => $this->instanceName,
             'title' => $this->title,
             'isAjax' => $this->app->isAjax(),
-            'action' => $action
+            'action' => $action,
+            "message" => $this->showMessage("message"),
+            "error" => $this->showMessage("error")
         );
 
         if ($this->destroyPath != null) {

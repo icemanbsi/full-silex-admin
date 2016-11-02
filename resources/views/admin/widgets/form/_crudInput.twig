@@ -2,20 +2,20 @@
 
 options :
     - columnName (req)      : to set field name
-    - title (opt)           : title or field name
+    - customTitle (opt)     : title or field name
     - required (opt)        : if this field is required
     - type (opt)            : available type is text(default), textarea, datepicker, timepicker, password
     - readOnly (opt)        : if this field is readonly
 
 #}
-{% if title is not defined or title is empty %}
-    {% set title = columnName|capitalize %}
+{% if customTitle is not defined or customTitle is empty %}
+    {% set customTitle = columnName|capitalize %}
 {% endif %}
 
 {% set instance = attribute(_context, instanceName) %}
-{% set value = attribute(instance, columnName) %}
+{% set value = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : '') %}
 <div class="form-group form-group-default {% if required is defined %}required{% endif %} {% if type is defined and type == "timepicker" %}bootstrap-timepicker input-group{% endif %}">
-    <label for="{{ instanceName }}_{{ columnName }}">{{ title }}</label>
+    <label for="{{ instanceName }}_{{ columnName }}">{{ customTitle }}</label>
     {% if type is defined and type == "textarea" %}
         <textarea name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if required is defined %}validate[required]{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %}>{{ value|escape }}</textarea>
     {% elseif type is defined and type == "password" %}

@@ -14,7 +14,9 @@ use FullSilex\Models\Traits\HasTimestamp;
  */
 abstract class Admin extends BaseModel
 {
-    use Authorizable, HasTimestamp;
+    use Authorizable, HasTimestamp{
+        Authorizable::validate as aValidate;
+    }
 
     const STATUS_ACTIVE = "active";
     const STATUS_INACTIVE = "inactive";
@@ -45,6 +47,9 @@ abstract class Admin extends BaseModel
     );
 
     public function validate(){
+        parent::validate();
+        $this->aValidate();
+
         //somehow validate uniqueness of from phpActiveRecord has some errors. So we need to manually check the email for uniqueness.
         $admins = Admin::all(array(
             "conditions" => array("email=? AND id<>?", $this->email, $this->id)

@@ -108,6 +108,19 @@ class AdminsController extends CRUDController
 
     }
 
+    protected function listActions($instanceArray)
+    {
+        $actions = '<div class="text-right">
+                    <a title="Edit" href="'.$this->app->url($this->editPath["route"], array('method' => $this->editPath['method'], 'id' => $instanceArray['id'])).'" data-toggle="dialog"><span class="fa fa-pencil"></span></a>
+					<a title="Delete" href="'.$this->app->url($this->deletePath["route"], array('method' => $this->deletePath['method'], 'id' => $instanceArray['id'])).'" data-toggle="dialog"><span class="fa fa-trash"></span></a>
+					</div>';
+        if (!is_null($this->dragField)) {
+            $actions .='<input type="hidden" class="id" value="'.$instanceArray['id'].'"/>
+					<input type="hidden" class="'.$this->dragField.'" value="'.$instanceArray[$this->dragField].'"/>';
+        }
+        return $actions;
+    }
+
     protected function setupAdditionalAssigns($instance) {
 
         $statuses = array(
