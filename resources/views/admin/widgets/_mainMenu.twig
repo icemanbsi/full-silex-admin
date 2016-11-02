@@ -14,12 +14,12 @@
         <span class="icon-thumbnail {% if activeMainMenu == "admins" %}bg-success{% endif %}"><i class="fa fa-user-md"></i></span>
     </li>
 
-    {#<li class="{if $activeMainMenu == "settings"}open{/if}">#}
-    {#<a href="{url path='admin/settings/index'}">#}
-        {#<span class="title">Settings</span>#}
-    {#</a>#}
-    {#<span class="icon-thumbnail {if $activeMainMenu == "settings"}bg-success{/if}"><i class="fa fa-cogs"></i></span>#}
-    {#</li>#}
+    <li class="{% if activeMainMenu == "settings" %}open{% endif %}">
+        <a href="{{ baseUrl('admin/settings/index') }}">
+            <span class="title">Settings</span>
+        </a>
+        <span class="icon-thumbnail {% if activeMainMenu == "settings" %}bg-success{% endif %}"><i class="fa fa-cogs"></i></span>
+    </li>
 
 
     {#<li class="">#}

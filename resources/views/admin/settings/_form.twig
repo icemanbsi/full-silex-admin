@@ -1,0 +1,25 @@
+{% extends "/admin/widgets/crud/add/_addForm.twig" %}
+{% set controllerName = "settings" %}
+
+
+{% block topLeftActionBar %}
+{% endblock %}
+
+{% block topRightActionBar %}
+{% endblock %}
+
+{% block formContent %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {% set instance = attribute(_context, instanceName) %}
+                    {% include "admin/settings/input/_" ~ instance.input_type  ~ ".twig" %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
