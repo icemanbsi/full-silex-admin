@@ -10,58 +10,64 @@
             <h2 class="text-primary bold"><i class="fa fa-line-chart m-r-15"></i>{{ title|capitalize }}</h2>
         </div>
         <div class="panel-body">
-            <div class="row m-b-10">
-                <div class="col-sm-12 text-right">
-                    <a href="{{ baseUrl(addPath.route, {"method" : addPath.method}) }}" title="Add {{ title }}" data-toggle="dialog" class="btn btn-primary"><span class="fa fa-plus m-r-10"></span> Add {{ title|capitalize }}</a>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-8 col-md-6 col-lg-4">
-                    <div class="form-group form-group-default">
-                        <label>{{ "Filter by Keyword"|trans }}</label>
-                        <input type="text" id="search-table" class="form-control" placeholder="keywords"/>
+            {% block topActionHeader %}
+                <div class="row m-b-10">
+                    <div class="col-sm-12 text-right">
+                        <a href="{{ baseUrl(addPath.route, {"method" : addPath.method}) }}" title="Add {{ title }}" data-toggle="dialog" class="btn btn-primary"><span class="fa fa-plus m-r-10"></span> Add {{ title|capitalize }}</a>
                     </div>
                 </div>
-                <div class="col-md-3 col-lg-6 hide-for-medium-down"></div>
-                <div class="col-sm-4 col-md-3 col-lg-2">
-                    <div class="form-group form-group-default">
-                        <label>{{ "Show"|trans }}</label>
-                        <select id="dataTable_length" class="cs-select cs-skin-slide" data-init-plugin="cs-select">
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
+            {% endblock %}
+
+            {% block filterActionHeader %}
+                <div class="row">
+                    <div class="col-sm-8 col-md-6 col-lg-4">
+                        <div class="form-group form-group-default">
+                            <label>{{ "Filter by Keyword"|trans }}</label>
+                            <input type="text" id="search-table" class="form-control" placeholder="keywords"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-lg-6 hide-for-medium-down"></div>
+                    <div class="col-sm-4 col-md-3 col-lg-2">
+                        <div class="form-group form-group-default">
+                            <label>{{ "Show"|trans }}</label>
+                            <select id="dataTable_length" class="cs-select cs-skin-slide" data-init-plugin="cs-select">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endblock %}
 
+            {% block table %}
+                {% if (dragField is defined and dragField is not empty) or (isSortable is defined and isSortable is not empty and isSortable == true) %}
+                    {% set sortableTable = "sortableTable" %}
+                {% else %}
+                    {% set sortableTable = "" %}
+                {% endif %}
+                {% if dataTableServerSide is defined and dataTableServerSide is not empty and dataTableServerSide == true %}
+                    {% set dtServerSide = "serverSide" %}
+                {% else %}
+                    {% set dtServerSide = "" %}
+                {% endif %}
 
-            {% if (dragField is defined and dragField is not empty) or (isSortable is defined and isSortable is not empty and isSortable == true) %}
-                {% set sortableTable = "sortableTable" %}
-            {% else %}
-                {% set sortableTable = "" %}
-            {% endif %}
-            {% if dataTableServerSide is defined and dataTableServerSide is not empty and dataTableServerSide == true %}
-                {% set dtServerSide = "serverSide" %}
-            {% else %}
-                {% set dtServerSide = "" %}
-            {% endif %}
+                <div class="table-responsive">
+                    <table class="{{ sortableTable }} {{ dtServerSide }} table aTable in table-hover" rel="{{ baseUrl(indexPath.route, {"method" : indexPath.method}) }}" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            {% for column in columns %}
+                                <th {% if thAttributes[loop.index0] is defined %}{{ thAttributes[loop.index0] }}{% endif %}>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                        </thead>
+                        <tbody>
 
-            <div class="table-responsive">
-                <table class="{{ sortableTable }} {{ dtServerSide }} table aTable in table-hover" rel="{{ baseUrl(indexPath.route, {"method" : indexPath.method}) }}" style="width: 100%;">
-                    <thead>
-                    <tr>
-                        {% for column in columns %}
-                            <th {% if thAttributes[loop.index0] is defined %}{{ thAttributes[loop.index0] }}{% endif %}>{{ column }}</th>
-                        {% endfor %}
-                    </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
-            </div>
+                        </tbody>
+                    </table>
+                </div>
+            {% endblock %}
         </div>
     </div>
 {% endblock %}

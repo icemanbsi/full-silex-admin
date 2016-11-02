@@ -8,6 +8,7 @@
 
 namespace FullSilexAdmin\Controllers;
 
+use FullSilex\Helpers\ModelHelper;
 
 class SettingsController extends CRUDController
 {
@@ -18,7 +19,7 @@ class SettingsController extends CRUDController
     protected $addFormTpl = '_form';
     protected $editFormTpl = '_form';
     protected $deleteFormTpl = '/admin/widgets/crud/delete/_deleteForm';
-    protected $indexTpl = '/admin/widgets/crud/_index';
+    protected $indexTpl = '_index';
 
     // For redirect when success / error happens
     protected $indexPath = array('route' => 'admin/settings', 'method' => 'index');
