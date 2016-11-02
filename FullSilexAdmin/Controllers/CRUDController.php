@@ -217,10 +217,10 @@ class CRUDController extends BaseController
         }
         $assigns["form"] = $this->render($this->deleteFormTpl, $assigns);
         if ($this->app->isAjax()) {
-            $this->render($this->deleteAjaxTpl, $assigns);
+            return $this->render($this->deleteAjaxTpl, $assigns);
         }
         else {
-            $this->render($this->deleteNoAjaxTpl, $assigns);
+            return $this->render($this->deleteNoAjaxTpl, $assigns);
         }
     }
 
@@ -332,7 +332,16 @@ class CRUDController extends BaseController
         $instance = $this->findInstance(true);
 //        $instance = $this->setInstanceAttributes($instance);
         $error = true;
-        if ($instance->errors->is_empty()) {
+        if (is_null($instance)) {
+            $errorMessage = $this->app->trans('instanceNotFound', array('model' => $this->title));
+            if ($this->app->isAjax()) {
+                return $this->displayErrors($errorMessage, $this->deleteAjaxTpl, $this->model());
+            }
+            else {
+                return $this->displayErrors($errorMessage, $this->deleteNoAjaxTpl, $this->model());
+            }
+        }
+        if (empty($instance->errors) || $instance->errors->is_empty()) {
             try {
                 $this->app->log("trying to delete data..");
                 $instance->delete();
