@@ -45,13 +45,23 @@ class Application extends \FullSilex\Application
 }
 ```
 - Create AdminControllerProvider class, extended from FullSilex\ControllerProvider
-
+- Create App\Controllers\Admin\AdminsController class, extended from FullSilexAdmin\Controller\AdminsController
+- Create App\Controllers\Admin\HomeController class, extended from FullSilexAdmin\Controller\HomeController
+- Create App\Controllers\Admin\SettingsController class, extended from FullSilexAdmin\Controller\SettingsController
+- Create App\Models\Admin class, extended from FullSilexAdmin\Models\Admin
+- Create App\Models\AdminSession class, extended from FullSilexAdmin\Models\AdminSession
+- Create App\Models\Setting class, extended from FullSilexAdmin\Models\Setting
+- Create App\Models\Repositories\AdminRepository class, extended from FullSilexAdmin\Models\Repositories\AdminRepository
 
 #### 4. You are ready to go..
 Add your controllers, models, template files, and others.
+
+#### VIEWS
+You can override default views by creating files with the same name (and subfolder) in resources/views/admin. For example to replace main menu you can create resources/views/admin/widgets/_mainMenu.twig.
 
 
 ## Credits
 
 1. Silex Framework
 2. Database migration by Ruckus (ruckusing/ruckusing-migrations)
+3. Template by Revox (This is not a free template, so to get full details please buy the original from https://themeforest.net/item/pages-admin-dashboard-template-web-app/9694847)
