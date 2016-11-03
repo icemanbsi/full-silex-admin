@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Created by PhpStorm.
- * User: Trio-1602
+ * Created by Bobby Stenly Irawan (http://bobbystenly.com)
  * Date: 10/13/16
  * Time: 3:13 PM
  */
@@ -50,6 +49,9 @@ class CRUDController extends BaseController
     // protected $sortableIdColumnIndex = 0;
     // -- END - SORTABLE -- //
 
+    // if you dealing with a large data, you can use data tables server side option.
+    protected $dataTableServerSide = false;
+
     public $columns = array('column', 'names');
     public $thAttributes = array(); // Class sort_asc or sort_desc can be used to set default sorting.
     public $columnDefs = '[]'; // Use this to handle columns' behaviours, doc: http://www.datatables.net/usage/columns
@@ -64,6 +66,8 @@ class CRUDController extends BaseController
     protected $deleteNoAjaxTpl = '/admin/widgets/crud/delete/_deleteNoAjax';
 
 
+    protected $dtsFields = array();
+    protected $primaryKey = "id";
     // Minimum overriding requirements //
     /**
      * Override this with model linked with this controller.
@@ -78,7 +82,7 @@ class CRUDController extends BaseController
      * @return array
      */
     protected function listData() {
-        $sql = "SELECT * FROM " . call_user_func(array($this->model(), "table_name"));
+        $sql = "SELECT * FROM " . $this->getTableName();
         $instances = ModelHelper::objectsToArray( call_user_func(array($this->model(), "find_by_sql"), $sql) );
         $instanceRows = array();
         if (!empty($instances)) {
@@ -89,14 +93,26 @@ class CRUDController extends BaseController
 
                     $this->listActions($instanceArray)
                 );
-                if ($this->setupSortable) {
-                    $instanceRow[] = $instanceArray['id'];
+                if ($this->setupSortable && !$this->dataTableServerSide) {
+                    $instanceRow[] = $instanceArray[$this->primaryKey];
                     array_unshift($instanceRow, $instanceArray[$this->dragField]);
                 }
                 $instanceRows[] = $instanceRow;
             }
         }
         return $instanceRows;
+    }
+
+    /**
+     * Data used in index listing when dataTableServerSide is turned on
+     * @return array
+     */
+    protected function listDataServerSide() {
+
+    }
+
+    protected function dataTableServerSideFields(){
+        return array();
     }
 
     /**
@@ -127,18 +143,32 @@ class CRUDController extends BaseController
     }
 
     public function index() {
+
+        if($this->dataTableServerSide){
+            $this->setFields( $this->dataTableServerSideFields() );
+        }
+
         if($this->app->isAjax()){
-            return json_encode(array('aaData' => $this->listData()));
+            if($this->dataTableServerSide){
+                echo json_encode($this->listDataServerSide());
+            }
+            else {
+                return json_encode(array('aaData' => $this->listData()));
+            }
         }
         else{
             return $this->render($this->indexTpl, array(
-                'indexPath' => $this->indexPath,
-                'addPath' => $this->addPath,
-                'columns' => $this->columns,
-                'thAttributes' => $this->thAttributes,
-                'columnDefs' => $this->columnDefs,
-                'instanceName' => $this->instanceName,
-                'title' => $this->title
+                'dataTableServerSide'   => $this->dataTableServerSide,
+                'reorderPath'           => $this->reorderPath,
+                'isSortable'            => $this->setupSortable,
+                'dragField'             => $this->dragField,
+                'indexPath'             => $this->indexPath,
+                'addPath'               => $this->addPath,
+                'columns'               => $this->columns,
+                'thAttributes'          => $this->thAttributes,
+                'columnDefs'            => $this->columnDefs,
+                'instanceName'          => $this->instanceName,
+                'title'                 => $this->title
             ));
         }
     }
@@ -161,6 +191,10 @@ class CRUDController extends BaseController
 
 
     // Please do not override these functions, unless you know the risk.
+    public function getTableName(){
+        return call_user_func(array($this->model(), "table_name"));
+    }
+
     public function add() {
         $this->breadcrumbs[] = array('url' => $this->app->url($this->indexPath["route"], array("method" => $this->indexPath["method"])), 'name' => ucfirst($this->title) . ' List');
         $this->breadcrumbs[] = array('url' => '', 'name' => 'New '.$this->title);
@@ -371,13 +405,13 @@ class CRUDController extends BaseController
     protected function decideIdSource($post) {
         $id = '';
         if ($post) {
-            if (!empty($this->request->get($this->instanceName)) && !empty($this->request->get($this->instanceName)['id'])) {
-                $id = $this->request->get($this->instanceName)['id'];
+            if (!empty($this->request->get($this->instanceName)) && !empty($this->request->get($this->instanceName)[$this->primaryKey])) {
+                $id = $this->request->get($this->instanceName)[$this->primaryKey];
             }
         }
         else {
-            if (!empty($this->request->get('id'))) {
-                $id = $this->request->get('id');
+            if (!empty($this->request->get($this->primaryKey))) {
+                $id = $this->request->get($this->primaryKey);
             }
         }
         return $id;
@@ -388,7 +422,7 @@ class CRUDController extends BaseController
 
         $instance = null;
         if (!empty($id)) {
-            $instance = call_user_func(array($this->model(), "find_by_id"), $id);
+            $instance = call_user_func(array($this->model(), "find_by_" . $this->primaryKey), $id);
             if (empty($instance)) {
                 return null;
             }
@@ -490,6 +524,34 @@ class CRUDController extends BaseController
             ));
 
             return $this->render($template, $assigns);
+        }
+    }
+
+
+    //Data Tables Server Side Functions
+    public function setFields( $array ) {
+        //set columns
+        $this->columns   = $this->setupSortable ? array($this->dragField) : array();
+        $this->columns[] = 'Id';
+
+        //set fields
+        $this->dtsFields    = $this->setupSortable ? array(array('db' => $this->dragField, 'dt' => 0, 'prefix' => 't')) : array();
+        $this->dtsFields[]  = array(
+            'db'        => $this->primaryKey,
+            'dt'        => $this->setupSortable ? 1 : 0,
+            'prefix'    => 't'
+        );
+        foreach($array as $key => $value) {
+            //set columns
+            $this->columns[] = isset( $value['column'] ) ? $value['column'] : $value['field'];
+
+            //set fields
+            $this->dtsFields[]['db']                                        = $value['field'];
+            $this->dtsFields[count( $this->dtsFields ) - 1]['dt']           = $this->setupSortable ? $key + 2 : $key + 1;
+            $this->dtsFields[count( $this->dtsFields ) - 1]['prefix']       = isset( $value['prefix'] ) ? $value['prefix'] : 't';
+            $this->dtsFields[count( $this->dtsFields ) - 1]['rawSql']       = isset( $value['rawSql'] ) ? $value['rawSql'] : null;
+            $this->dtsFields[count( $this->dtsFields ) - 1]['formatter']    = isset( $value['formatter'] ) ? $value['formatter'] : null;
+            $this->dtsFields[count( $this->dtsFields ) - 1]['filter']       = isset( $value['filter'] ) ? $value['filter'] : "like";
         }
     }
 }

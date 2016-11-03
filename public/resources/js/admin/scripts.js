@@ -128,6 +128,22 @@ Number.prototype.numberFormat = function(dec, decimalSeparator, thousandSeparato
 }
 String.prototype.numberFormat = Number.prototype.numberFormat; //enable number format for string number;
 
+function DestroySelextFxPlugin($element){
+    var $wrapper = $element.closest(".cs-wrapper");
+    if($wrapper) {
+        $wrapper.after($element);
+        $wrapper.remove();
+    }
+    $element.removeClass("csSelectInitialized");
+}
+
+function UpdateSelectFxPlugin($element){
+    DestroySelextFxPlugin($element);
+    if($element.find("option").length > 0){
+        $.Pages.initSelectFxPlugin();
+    }
+}
+
 (function($) {
 
     'use strict';

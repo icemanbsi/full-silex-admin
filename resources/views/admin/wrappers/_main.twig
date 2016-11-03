@@ -106,15 +106,7 @@
 
         <!-- START FOOTER -->
         <div class="container-fluid container-fixed-lg footer">
-            <div class="copyright sm-text-center">
-                <p class="small no-margin pull-left sm-pull-reset">
-                    <span class="hint-text">Copyright © {{ "now"|date("Y") }}</span>
-                    <a href="http://bobbystenly.com" target="_blank" class="font-montserrat">Bobby Stenly Irawan</a>.
-                    <span class="hint-text">Designed By REVOX.</span>
-                    <span class="hint-text">All rights reserved.</span>
-                </p>
-                <div class="clearfix"></div>
-            </div>
+            {% include "admin/wrappers/items/_copyright.twig" %}
             {% block footer %}{% endblock %}
         </div>
         <!-- END FOOTER -->

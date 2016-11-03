@@ -6,8 +6,7 @@ use App\Models\Admin;
 use App\Models\AdminSession;
 
 /**
- * Created by PhpStorm.
- * User: Trio-1602
+ * Created by Bobby Stenly Irawan (http://bobbystenly.com)
  * Date: 10/24/16
  * Time: 10:41 AM
  */
