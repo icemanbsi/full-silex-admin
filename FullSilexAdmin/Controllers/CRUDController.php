@@ -108,7 +108,53 @@ class CRUDController extends BaseController
      * @return array
      */
     protected function listDataServerSide() {
+        $request = $_GET;
 
+        // Build the SQL query string from the request
+        $limit  = $this->limit( $request, $this->dtsFields );
+        $where  = $this->filter( $request, $this->dtsFields );
+        $order  = $this->order( $request, $this->dtsFields );
+
+        $data   = null;
+
+        if( $this->checkUnionSqlForHaving( $this->dtsFields ) ) {
+            $having = $this->filterHaving( $request, $this->dtsFields );
+            $sql    = "(SELECT " . $this->pluckString($this->dtsFields, 'db') . "
+                 FROM `{$this->getTableName()}` t
+                 $where)
+
+                 UNION
+
+                 (SELECT " . $this->pluckString($this->dtsFields, 'db') . "
+                 FROM `{$this->getTableName()}` t
+                 $having)
+
+                 $order
+                 $limit";
+        }
+        else {
+            $sql = "SELECT SQL_CALC_FOUND_ROWS " . $this->pluckString($this->dtsFields, 'db') . "
+                 FROM `{$this->getTableName()}` t
+                 $where
+                 $order
+                 $limit";
+        }
+        $data = ModelHelper::objectsToArray( call_user_func(array($this->model(), "find_by_sql"), $sql) );
+
+        $resFilterLength = ModelHelper::objectsToArray( call_user_func(array($this->model(), "find_by_sql"), "SELECT FOUND_ROWS() AS foundRows") );
+        $recordsFiltered    = $resFilterLength[0]['foundRows'];
+
+        $resTotalLengthSql = "SELECT COUNT(t.`{$this->primaryKey}`) AS count
+			 FROM   `{$this->getTableName()}` t";
+        $resTotalLength = ModelHelper::objectsToArray( call_user_func(array($this->model(), "find_by_sql"), $resTotalLengthSql) );
+        $recordsTotal = $resTotalLength[0]['count'];
+
+        return array(
+            "draw"            => intval( $request['draw'] ),
+            "recordsTotal"    => intval( $recordsTotal ),
+            "recordsFiltered" => intval( $recordsFiltered ),
+            "data"            => $this->dataOutput( $this->dtsFields, $data )
+        );
     }
 
     protected function dataTableServerSideFields(){
@@ -553,5 +599,307 @@ class CRUDController extends BaseController
             $this->dtsFields[count( $this->dtsFields ) - 1]['formatter']    = isset( $value['formatter'] ) ? $value['formatter'] : null;
             $this->dtsFields[count( $this->dtsFields ) - 1]['filter']       = isset( $value['filter'] ) ? $value['filter'] : "like";
         }
+    }
+
+    protected function limit( $request, $columns ) {
+        $limit = '';
+
+        if( isset( $request['start'] ) && $request['length'] != -1 ) {
+            $limit = "LIMIT " . intval( $request['start'] ) . ", " . intval( $request['length'] );
+        }
+
+        return $limit;
+    }
+
+    protected function order( $request, $columns ) {
+        $order = '';
+
+        if( isset( $request['order'] ) && count( $request['order'] ) ) {
+            $orderBy    = array();
+            $dtColumns  = $this->pluck( $columns, 'dt' );
+
+            for( $i = 0, $ien = count( $request['order'] ); $i < $ien; $i++ ) {
+                // Convert the column index into the column data property
+                $columnIdx      = intval( $request['order'][$i]['column'] );
+                $requestColumn  = $request['columns'][$columnIdx];
+
+                $columnIdx      = array_search( $requestColumn['data'], $dtColumns );
+                $column         = $columns[$columnIdx];
+
+                if( $requestColumn['orderable'] == 'true' ) {
+                    $dir = $request['order'][$i]['dir'] === 'asc' ?
+                        'ASC' :
+                        'DESC';
+
+                    if( $this->checkUnionSqlForHaving( $this->getFields() ) ) {
+                        $orderBy[] = $column['db'] . ' ' . $dir;
+                    }
+                    else {
+                        $orderBy[] = $column['prefix'] . '.`' . $column['db'] . '` ' . $dir;
+                    }
+                }
+            }
+
+            if(!empty($orderBy)) {
+                $order = 'ORDER BY ' . implode( ', ', $orderBy );
+            }
+        }
+
+        return $order;
+    }
+
+    protected function pluck( $a, $prop ) {
+        $out = array();
+
+        for( $i = 0, $len = count($a); $i < $len; $i++ ) {
+            $out[] = $a[$i][$prop];
+        }
+
+        return $out;
+    }
+
+    protected function pluckString( $a, $prop ) {
+        $out = array();
+
+        for( $i = 0, $len = count($a); $i < $len; $i++ ) {
+            if( isset( $a[$i]['rawSql'] ) && !empty($a[$i]['rawSql']) ) {
+                $out[] = $a[$i]['rawSql'] . ' AS ' . $a[$i][$prop];
+            }
+            else {
+                $out[] = $a[$i]['prefix'] . '.`' . $a[$i][$prop] . '`';
+            }
+        }
+
+        return implode( ',', $out );
+    }
+
+    protected function filter( $request, $columns ) {
+        $globalSearch   = array();
+        $columnSearch   = array();
+        $dtColumns      = $this->pluck( $columns, 'dt' );
+
+        if( isset($request['search']) && $request['search']['value'] != '' ) {
+            $str = $request['search']['value'];
+
+            for( $i = 0, $ien = count($request['columns']); $i < $ien; $i++ ) {
+                $requestColumn  = $request['columns'][$i];
+                $columnIdx      = array_search( $requestColumn['data'], $dtColumns );
+                $column         = $columns[$columnIdx];
+
+                if( $requestColumn['searchable'] == 'true' &&  empty( $column['rawSql'] ) ) {
+                    switch(strtolower($column['filter'])){
+                        case "equals" :
+                            $globalSearch[] = $column['prefix'] . ".`" . $column['db'] . "` = " . '\'' . $str . '\'';
+                            break;
+                        case "between" :
+                            $arr = explode(";", $str);
+                            if (count($arr) == 2) {
+                                $globalSearch[] = $column['prefix'] . ".`" . $column['db'] . "` BETWEEN " . '\'' . $arr[0] . '\' AND \'' . $arr[1] . '\'';
+                            }
+                            break;
+                        case "like" :
+                        default :
+                            $globalSearch[] = $column['prefix'] . ".`" . $column['db'] . "` LIKE " . '\'%' . $str . '%\'';
+                            break;
+                    }
+                }
+            }
+        }
+
+        // Individual column filtering
+        for( $i = 0, $ien = count( $request['columns'] ); $i < $ien; $i++ ) {
+            $requestColumn  = $request['columns'][$i];
+            $columnIdx      = array_search( $requestColumn['data'], $dtColumns );
+            $column         = $columns[$columnIdx];
+
+            $str            = $requestColumn['search']['value'];
+
+            if( $requestColumn['searchable'] == 'true' && $str != '' &&  empty( $column['rawSql'] ) ) {
+                switch(strtolower($column['filter'])){
+                    case "equals" :
+                        $columnSearch[] = $column['prefix'] . ".`" . $column['db'] . "` = " . '\'' . $str . '\'';
+                        break;
+                    case "between" :
+                        $arr = explode(";", $str);
+                        if (count($arr) == 2) {
+                            $columnSearch[] = $column['prefix'] . ".`" . $column['db'] . "` BETWEEN " . '\'' . $arr[0] . '\' AND \'' . $arr[1] . '\'';
+                        }
+                        break;
+                    case "like" :
+                    default :
+                        $columnSearch[] = $column['prefix'] . ".`" . $column['db'] . "` LIKE " . '\'%' . $str . '%\'';
+                        break;
+                }
+            }
+        }
+
+        // Combine the filters into a single string
+        $where = '';
+
+        if( count( $globalSearch ) ) {
+            $where = '(' . implode( ' OR ', $globalSearch ) . ')';
+        }
+
+        if( count( $columnSearch ) ) {
+            $where = $where === '' ?
+                implode( ' AND ', $columnSearch ) :
+                $where .' AND '. implode( ' AND ', $columnSearch );
+        }
+
+        if( $where !== '' ) {
+            $where = 'WHERE ' . $where;
+        }
+
+        return $where;
+    }
+
+    protected function filterHaving( $request, $columns ) {
+        $globalSearch   = array();
+        $columnSearch   = array();
+        $dtColumns      = $this->pluck( $columns, 'dt' );
+
+        if( isset($request['search']) && $request['search']['value'] != '' ) {
+            $str = $request['search']['value'];
+
+            for( $i = 0, $ien = count($request['columns']); $i < $ien; $i++ ) {
+                $requestColumn  = $request['columns'][$i];
+                $columnIdx      = array_search( $requestColumn['data'], $dtColumns );
+                $column         = $columns[$columnIdx];
+
+                if( $requestColumn['searchable'] == 'true' &&  !empty( $column['rawSql'] ) ) {
+                    switch(strtolower($column['filter'])){
+                        case "equals" :
+                            $globalSearch[] = $column['db'] . " = " . '\'' . $str . '\'';
+                            break;
+                        case "between" :
+                            $arr = explode(";", $str);
+                            if (count($arr) == 2) {
+                                $globalSearch[] = $column['db'] . " BETWEEN " . '\'' . $arr[0] . '\' AND \'' . $arr[1] . '\'';
+                            }
+                            break;
+                        case "like" :
+                        default :
+                            $globalSearch[] = $column['db'] . " LIKE " . '\'%' . $str . '%\'';
+                            break;
+                    }
+                }
+            }
+        }
+
+        // Individual column filtering
+        for( $i = 0, $ien = count( $request['columns'] ); $i < $ien; $i++ ) {
+            $requestColumn  = $request['columns'][$i];
+            $columnIdx      = array_search( $requestColumn['data'], $dtColumns );
+            $column         = $columns[$columnIdx];
+
+            $str            = $requestColumn['search']['value'];
+
+            if( $requestColumn['searchable'] == 'true' && $str != '' &&  !empty( $column['rawSql'] ) ) {
+                switch(strtolower($column['filter'])){
+                    case "equals" :
+                        $columnSearch[] = $column['db'] . " = " . '\'' . $str . '\'';
+                        break;
+                    case "between" :
+                        $arr = explode(";", $str);
+                        if (count($arr) == 2) {
+                            $columnSearch[] = $column['db'] . " BETWEEN " . '\'' . $arr[0] . '\' AND \'' . $arr[1] . '\'';
+                        }
+                        break;
+                    case "like" :
+                    default :
+                        $columnSearch[] = $column['db'] . " LIKE " . '\'%' . $str . '%\'';
+                        break;
+                }
+            }
+        }
+
+        $having = '';
+
+        if( count( $globalSearch ) ) {
+            $having = '(' . implode( ' OR ', $globalSearch ) . ')';
+        }
+
+        if( count( $columnSearch ) ) {
+            $having = $having === '' ?
+                implode( ' AND ', $columnSearch ) :
+                $having .' AND '. implode( ' AND ', $columnSearch );
+        }
+
+        if( $having !== '' ) {
+            $having = 'HAVING ' . $having;
+        }
+
+        return $having;
+    }
+
+    protected function dataOutput( $columns, $data ) {
+        $out = array();
+
+        for( $i = 0, $ien = count($data) ; $i < $ien ; $i++ ) {
+            $row        = array();
+
+            $max_row    = -1;
+            for( $j = 0, $jen = count($columns) ; $j < $jen ; $j++ ) {
+                $column = $columns[$j];
+
+                // Is there a formatter?
+                if( isset( $column['formatter'] ) ) {
+                    $row[ $column['dt'] ] = $column['formatter']( $data[$i][ $column['db'] ], $data[$i] );
+                }
+                else {
+                    $row[ $column['dt'] ] = $data[$i][ $columns[$j]['db'] ];
+                }
+
+                if( $max_row < $column['dt'] ) { $max_row = $column['dt']; }
+            }
+
+            $row['DT_RowAttr']['data-id'] = $data[$i][$this->primaryKey];
+            if( isset( $data[$i][$this->dragField] ) ) {
+                $row['DT_RowAttr']['data-position'] = $data[$i][$this->dragField];
+            }
+
+            $out[] = $row;
+        }
+
+        return $out;
+    }
+
+    protected function checkUnionSqlForHaving( $a ) {
+        $flag = false;
+
+        for( $i = 0, $len = count($a); $i < $len; $i++ ) {
+            if( isset( $a[$i]['rawSql'] ) ) {
+                $flag = true;
+                break;
+            }
+        }
+
+        return $flag;
+    }
+
+    public function reorderServerSide() {
+        if($this->app->isAjax()) {
+            $oldPosition    = $_POST['oldPosition'];
+            $newPosition    = $_POST['newPosition'];
+            $id             = $_POST['id'];
+
+            if($oldPosition > $newPosition) {
+                call_user_func(array($this->model(), "update_all"), array(
+                    "set" => ' `' . $this->dragField . '`=`' . $this->dragField . '` + 1 ',
+                    "conditions" => array('`' . $this->dragField . '` < ? AND `' . $this->dragField . '` >= ?', $oldPosition, $newPosition)
+                ));
+            } else if ($oldPosition < $newPosition) {
+                call_user_func(array($this->model(), "update_all"), array(
+                    "set" => ' `' . $this->dragField . '`=`' . $this->dragField . '` - 1 ',
+                    "conditions" => array('`' . $this->dragField . '` > ? AND `' . $this->dragField . '` <= ?', $oldPosition, $newPosition)
+                ));
+            }
+
+            call_user_func(array($this->model(), "update_all"), array(
+                "set" => array($this->dragField => $newPosition),
+                "conditions" => array('`' . $this->primaryKey . '` = ?', $id)
+            ));
+        }
+        return "";
     }
 }
