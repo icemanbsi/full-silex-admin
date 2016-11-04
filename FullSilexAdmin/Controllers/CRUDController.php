@@ -68,6 +68,7 @@ class CRUDController extends BaseController
 
     protected $dtsFields = array();
     protected $primaryKey = "id";
+
     // Minimum overriding requirements //
     /**
      * Override this with model linked with this controller.
@@ -103,62 +104,40 @@ class CRUDController extends BaseController
         return $instanceRows;
     }
 
-    /**
-     * Data used in index listing when dataTableServerSide is turned on
-     * @return array
-     */
-    protected function listDataServerSide() {
-        $request = $_GET;
-
-        // Build the SQL query string from the request
-        $limit  = $this->limit( $request, $this->dtsFields );
-        $where  = $this->filter( $request, $this->dtsFields );
-        $order  = $this->order( $request, $this->dtsFields );
-
-        $data   = null;
-
-        if( $this->checkUnionSqlForHaving( $this->dtsFields ) ) {
-            $having = $this->filterHaving( $request, $this->dtsFields );
-            $sql    = "(SELECT " . $this->pluckString($this->dtsFields, 'db') . "
-                 FROM `{$this->getTableName()}` t
-                 $where)
-
-                 UNION
-
-                 (SELECT " . $this->pluckString($this->dtsFields, 'db') . "
-                 FROM `{$this->getTableName()}` t
-                 $having)
-
-                 $order
-                 $limit";
-        }
-        else {
-            $sql = "SELECT SQL_CALC_FOUND_ROWS " . $this->pluckString($this->dtsFields, 'db') . "
-                 FROM `{$this->getTableName()}` t
-                 $where
-                 $order
-                 $limit";
-        }
-        $data = ModelHelper::objectsToArray( call_user_func(array($this->model(), "find_by_sql"), $sql) );
-
-        $resFilterLength = ModelHelper::objectsToArray( call_user_func(array($this->model(), "find_by_sql"), "SELECT FOUND_ROWS() AS foundRows") );
-        $recordsFiltered    = $resFilterLength[0]['foundRows'];
-
-        $resTotalLengthSql = "SELECT COUNT(t.`{$this->primaryKey}`) AS count
-			 FROM   `{$this->getTableName()}` t";
-        $resTotalLength = ModelHelper::objectsToArray( call_user_func(array($this->model(), "find_by_sql"), $resTotalLengthSql) );
-        $recordsTotal = $resTotalLength[0]['count'];
-
-        return array(
-            "draw"            => intval( $request['draw'] ),
-            "recordsTotal"    => intval( $recordsTotal ),
-            "recordsFiltered" => intval( $recordsFiltered ),
-            "data"            => $this->dataOutput( $this->dtsFields, $data )
-        );
-    }
-
     protected function dataTableServerSideFields(){
-        return array();
+        return array(
+            array(  'column'    => 'Name',
+                'field'     => 'guest_name',
+                'rawSql'    => 'g.name'),
+            array(  'column'    => 'Cert Card',
+                'field'     => 'cert',
+                'rawSql'    => "concat(g.cert_type, ' - ', g.cert_number)" ),
+            array(  'column'    => 'Room',
+                'field'     => 'room_name',
+                'rawSql'    => 'r.name' ),
+            array(  'column'    => 'Room Type',
+                'field'     => 'room_type',
+                'rawSql'    => 'c.name' ),
+            array(  'column'    => 'Check In',
+                'field'     => 'check_in',
+                'prefix'    => 't',
+                'filter'    => 'between'),
+            array(  'column'    => 'Due Out',
+                'field'     => 'due_out',
+                'prefix'    => 't',
+                'filter'    => 'between' ),
+            array(  'column'    => 'Check Out',
+                'field'     => 'check_out',
+                'prefix'    => 't',
+                'filter'    => 'between' ),
+            array(  'column'    => 'Actions',
+                'field'     => 't_id',
+                'rawSql'    => 't.id',
+                'formatter' => function( $value, $array ) {
+                    return  '<a title="View" href="'.$this->app->getRouter()->getUrl($this->editPath, array('id' => $value)).'" data-toggle="dialog"><span class="fa fa-pencil"></span></a>
+                                  <a title="Delete" href="'.$this->app->getRouter()->getUrl($this->deletePath, array('id' => $value)).'" data-toggle="dialog"><span class="fa fa-trash"></span></a>';
+                })
+        );
     }
 
     /**
@@ -184,6 +163,59 @@ class CRUDController extends BaseController
 
     // Override these functions if needed
 
+    /**
+     * Data used in index listing when dataTableServerSide is turned on
+     * @return array
+     */
+    protected function listDataServerSide() {
+        $request = $_GET;
+
+        // Build the SQL query string from the request
+        $limit  = $this->limit( $request, $this->dtsFields );
+        $where  = $this->filter( $request, $this->dtsFields );
+        $order  = $this->order( $request, $this->dtsFields );
+
+        $data   = null;
+
+        if( $this->checkUnionSqlForHaving( $this->dtsFields ) ) {
+            $having = $this->filterHaving( $request, $this->dtsFields );
+            $selectSql    = "(SELECT " . $this->pluckString($this->dtsFields, 'db') . "
+                 FROM {$this->getTableName(true)} t
+                 $where)
+
+                 UNION
+
+                 (SELECT " . $this->pluckString($this->dtsFields, 'db') . "
+                 FROM {$this->getTableName(true)} t
+                 $having)";
+
+            $sql = "$selectSql $order $limit";
+        }
+        else {
+            $selectSql = "SELECT SQL_CALC_FOUND_ROWS " . $this->pluckString($this->dtsFields, 'db') . "
+                 FROM {$this->getTableName(true)} t
+                 $where";
+
+            $sql = "$selectSql $order $limit";
+        }
+        $data = ModelHelper::objectsToArray( call_user_func(array($this->model(), "find_by_sql"), $sql) );
+
+        $resFilterLength = ModelHelper::objectsToArray( call_user_func(array($this->model(), "find_by_sql"), "SELECT COUNT(*) AS found_rows FROM ($selectSql) countTable") );
+        $recordsFiltered    = $resFilterLength[0]['found_rows'];
+
+        $resTotalLengthSql = "SELECT COUNT(t.{$this->getTableNameQuote()}{$this->primaryKey}{$this->getTableNameQuote()}) AS count
+			 FROM {$this->getTableName(true)} t";
+        $resTotalLength = ModelHelper::objectsToArray( call_user_func(array($this->model(), "find_by_sql"), $resTotalLengthSql) );
+        $recordsTotal = $resTotalLength[0]['count'];
+
+        return array(
+            "draw"            => intval( $request['draw'] ),
+            "recordsTotal"    => intval( $recordsTotal ),
+            "recordsFiltered" => intval( $recordsFiltered ),
+            "data"            => $this->dataOutput( $this->dtsFields, $data )
+        );
+    }
+
     protected function setupAdditionalAssigns($instance) {
         return array();
     }
@@ -191,12 +223,16 @@ class CRUDController extends BaseController
     public function index() {
 
         if($this->dataTableServerSide){
+            $columnDefs = $this->getColumnsDef();
             $this->setFields( $this->dataTableServerSideFields() );
+        }
+        else{
+            $columnDefs = $this->columnDefs;
         }
 
         if($this->app->isAjax()){
             if($this->dataTableServerSide){
-                echo json_encode($this->listDataServerSide());
+                return json_encode($this->listDataServerSide());
             }
             else {
                 return json_encode(array('aaData' => $this->listData()));
@@ -212,7 +248,7 @@ class CRUDController extends BaseController
                 'addPath'               => $this->addPath,
                 'columns'               => $this->columns,
                 'thAttributes'          => $this->thAttributes,
-                'columnDefs'            => $this->columnDefs,
+                'columnDefs'            => $columnDefs,
                 'instanceName'          => $this->instanceName,
                 'title'                 => $this->title
             ));
@@ -237,8 +273,18 @@ class CRUDController extends BaseController
 
 
     // Please do not override these functions, unless you know the risk.
-    public function getTableName(){
-        return call_user_func(array($this->model(), "table_name"));
+    protected function getTableNameQuote(){
+        switch($this->app->config("dbConfig")["type"]){
+            case "pgsql": return '"';
+            default: return "`";
+        }
+    }
+    /**
+     * @param Boolean $useQuote
+     * @return mixed
+     */
+    public function getTableName($useQuote = false){
+        return ($useQuote ? $this->getTableNameQuote() : "") . call_user_func(array($this->model(), "table_name")) . ($useQuote ? $this->getTableNameQuote() : "");
     }
 
     public function add() {
@@ -575,7 +621,31 @@ class CRUDController extends BaseController
 
 
     //Data Tables Server Side Functions
-    public function setFields( $array ) {
+    /**
+     * You don't need to override this function. You can add your custom column defs at the $columnDefs attributes above.
+     * @return string
+     */
+    protected function getColumnsDef( ) {
+        $columnDefs = array();
+        if( $this->setupSortable ) {
+            $columnDefs[] = array(
+                "targets" => array(0, 1),
+                "visible" => false,
+                "searchable" => false
+            );
+        }
+        else {
+            $columnDefs[] = array(
+                "targets" => array(0),
+                "visible" => false,
+                "searchable" => false
+            );
+        }
+
+        return json_encode(array_merge($columnDefs, json_decode($this->columnDefs, true)));
+    }
+
+    protected function setFields( $array ) {
         //set columns
         $this->columns   = $this->setupSortable ? array($this->dragField) : array();
         $this->columns[] = 'Id';
@@ -605,7 +675,14 @@ class CRUDController extends BaseController
         $limit = '';
 
         if( isset( $request['start'] ) && $request['length'] != -1 ) {
-            $limit = "LIMIT " . intval( $request['start'] ) . ", " . intval( $request['length'] );
+            switch($this->app->config("dbConfig")["type"]){
+                case "pgsql" :
+                    $limit = "LIMIT " . intval( $request['length'] ) . " OFFSET " . intval( $request['start'] );
+                    break;
+                default :
+                    $limit = "LIMIT " . intval( $request['start'] ) . ", " . intval( $request['length'] );
+            }
+
         }
 
         return $limit;
@@ -631,11 +708,11 @@ class CRUDController extends BaseController
                         'ASC' :
                         'DESC';
 
-                    if( $this->checkUnionSqlForHaving( $this->getFields() ) ) {
+                    if( $this->checkUnionSqlForHaving( $this->dtsFields ) ) {
                         $orderBy[] = $column['db'] . ' ' . $dir;
                     }
                     else {
-                        $orderBy[] = $column['prefix'] . '.`' . $column['db'] . '` ' . $dir;
+                        $orderBy[] = $column['prefix'] . '.' . $this->getTableNameQuote() . $column['db'] . $this->getTableNameQuote() . $dir;
                     }
                 }
             }
@@ -666,7 +743,7 @@ class CRUDController extends BaseController
                 $out[] = $a[$i]['rawSql'] . ' AS ' . $a[$i][$prop];
             }
             else {
-                $out[] = $a[$i]['prefix'] . '.`' . $a[$i][$prop] . '`';
+                $out[] = $a[$i]['prefix'] . '.' . $this->getTableNameQuote() . $a[$i][$prop] . $this->getTableNameQuote();
             }
         }
 
@@ -689,17 +766,17 @@ class CRUDController extends BaseController
                 if( $requestColumn['searchable'] == 'true' &&  empty( $column['rawSql'] ) ) {
                     switch(strtolower($column['filter'])){
                         case "equals" :
-                            $globalSearch[] = $column['prefix'] . ".`" . $column['db'] . "` = " . '\'' . $str . '\'';
+                            $globalSearch[] = $column['prefix'] . ".{$this->getTableNameQuote()}" . $column['db'] . "{$this->getTableNameQuote()} = " . '\'' . $str . '\'';
                             break;
                         case "between" :
                             $arr = explode(";", $str);
                             if (count($arr) == 2) {
-                                $globalSearch[] = $column['prefix'] . ".`" . $column['db'] . "` BETWEEN " . '\'' . $arr[0] . '\' AND \'' . $arr[1] . '\'';
+                                $globalSearch[] = $column['prefix'] . ".{$this->getTableNameQuote()}" . $column['db'] . "{$this->getTableNameQuote()} BETWEEN " . '\'' . $arr[0] . '\' AND \'' . $arr[1] . '\'';
                             }
                             break;
                         case "like" :
                         default :
-                            $globalSearch[] = $column['prefix'] . ".`" . $column['db'] . "` LIKE " . '\'%' . $str . '%\'';
+                            $globalSearch[] = $column['prefix'] . ".{$this->getTableNameQuote()}" . $column['db'] . "{$this->getTableNameQuote()} LIKE " . '\'%' . $str . '%\'';
                             break;
                     }
                 }
@@ -717,17 +794,17 @@ class CRUDController extends BaseController
             if( $requestColumn['searchable'] == 'true' && $str != '' &&  empty( $column['rawSql'] ) ) {
                 switch(strtolower($column['filter'])){
                     case "equals" :
-                        $columnSearch[] = $column['prefix'] . ".`" . $column['db'] . "` = " . '\'' . $str . '\'';
+                        $columnSearch[] = $column['prefix'] . ".{$this->getTableNameQuote()}" . $column['db'] . "{$this->getTableNameQuote()} = " . '\'' . $str . '\'';
                         break;
                     case "between" :
                         $arr = explode(";", $str);
                         if (count($arr) == 2) {
-                            $columnSearch[] = $column['prefix'] . ".`" . $column['db'] . "` BETWEEN " . '\'' . $arr[0] . '\' AND \'' . $arr[1] . '\'';
+                            $columnSearch[] = $column['prefix'] . ".{$this->getTableNameQuote()}" . $column['db'] . "{$this->getTableNameQuote()} BETWEEN " . '\'' . $arr[0] . '\' AND \'' . $arr[1] . '\'';
                         }
                         break;
                     case "like" :
                     default :
-                        $columnSearch[] = $column['prefix'] . ".`" . $column['db'] . "` LIKE " . '\'%' . $str . '%\'';
+                        $columnSearch[] = $column['prefix'] . ".{$this->getTableNameQuote()}" . $column['db'] . "{$this->getTableNameQuote()} LIKE " . '\'%' . $str . '%\'';
                         break;
                 }
             }
@@ -885,19 +962,19 @@ class CRUDController extends BaseController
 
             if($oldPosition > $newPosition) {
                 call_user_func(array($this->model(), "update_all"), array(
-                    "set" => ' `' . $this->dragField . '`=`' . $this->dragField . '` + 1 ',
-                    "conditions" => array('`' . $this->dragField . '` < ? AND `' . $this->dragField . '` >= ?', $oldPosition, $newPosition)
+                    "set" => ' ' . $this->getTableNameQuote() . $this->dragField . $this->getTableNameQuote() . '=' . $this->getTableNameQuote() . $this->dragField . $this->getTableNameQuote() . ' + 1 ',
+                    "conditions" => array($this->getTableNameQuote() . $this->dragField . $this->getTableNameQuote() . ' < ? AND ' . $this->getTableNameQuote() . $this->dragField . $this->getTableNameQuote() . ' >= ?', $oldPosition, $newPosition)
                 ));
             } else if ($oldPosition < $newPosition) {
                 call_user_func(array($this->model(), "update_all"), array(
-                    "set" => ' `' . $this->dragField . '`=`' . $this->dragField . '` - 1 ',
-                    "conditions" => array('`' . $this->dragField . '` > ? AND `' . $this->dragField . '` <= ?', $oldPosition, $newPosition)
+                    "set" => ' ' . $this->getTableNameQuote() . $this->dragField . $this->getTableNameQuote() . '=' . $this->getTableNameQuote() . $this->dragField . $this->getTableNameQuote() . ' - 1 ',
+                    "conditions" => array($this->getTableNameQuote() . $this->dragField . $this->getTableNameQuote() . ' > ? AND ' . $this->getTableNameQuote() . $this->dragField . $this->getTableNameQuote() . ' <= ?', $oldPosition, $newPosition)
                 ));
             }
 
             call_user_func(array($this->model(), "update_all"), array(
                 "set" => array($this->dragField => $newPosition),
-                "conditions" => array('`' . $this->primaryKey . '` = ?', $id)
+                "conditions" => array($this->getTableNameQuote() . $this->primaryKey . $this->getTableNameQuote() . ' = ?', $id)
             ));
         }
         return "";
