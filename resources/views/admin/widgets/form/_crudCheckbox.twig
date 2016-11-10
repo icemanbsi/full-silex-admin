@@ -5,7 +5,6 @@ Options :
     - columnName (req)      : to set field name
     - required (opt)        : if this field is required
 
-
 #}
 {% set instance = attribute(_context, instanceName) %}
 {% set value = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : '') %}

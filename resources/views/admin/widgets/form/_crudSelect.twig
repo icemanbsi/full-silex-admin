@@ -4,13 +4,16 @@ Options :
     - customTitle (req)     : title or field name
     - columnName (req)      : to set field name
     - required (opt)        : if this field is required
-
+    - help (opt)            : help text - e.g. "25/12/2013"
 
 #}
 {% set instance = attribute(_context, instanceName) %}
 {% set value = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : '') %}
 <div class="form-group form-group-default {% if required is defined %}required{% endif %}">
     <label for="{{ instanceName }}_{{ columnName }}">{% if customTitle is defined and customTitle is not empty %}{{ customTitle|capitalize }}{% else %}{{ columnName|capitalize }}{% endif %}</label>
+    {% if help is defined and help != "" %}
+        <span class="help">{{ help }}</span>
+    {% endif %}
     <select name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control cs-select cs-skin-slide" data-init-plugin="cs-select">
         {% for option in options %}
         <option value="{{ option.value }}" {% if option.value == value %}selected{% endif %}>{{ option.text }}</option>
