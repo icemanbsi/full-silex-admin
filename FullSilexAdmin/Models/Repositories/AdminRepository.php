@@ -38,9 +38,9 @@ class AdminRepository extends \FullSilex\Models\Repositories\BaseRepository
     }
     public function logout() {
         $adminId = $this->app->getSession()->get('adminId');
-        $admin = Admin::find_by_id($adminId);
-        if($admin){
-            $admin->delete();
+        $adminSession = AdminSession::find_by_admin_id($adminId);
+        if($adminSession){
+            $adminSession->delete();
         }
         $this->app->getSession()->remove('adminId');
     }
