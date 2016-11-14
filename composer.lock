@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e81ea05cd75e4b2a226a26987a8945d6",
-    "content-hash": "baf62846e8316e259a8b7cadf7d3aec0",
+    "hash": "70947b736f31ec75a97665ff63db9e52",
+    "content-hash": "edb544f0fb45562752f9f1c37443b9c2",
     "packages": [
         {
             "name": "icemanbsi/full-silex",
-            "version": "v1.1.15",
+            "version": "v1.1.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/icemanbsi/full-silex.git",
-                "reference": "3b24daeb4b34c8f031e56fab9bdfd5de46c260d5"
+                "reference": "d73b16195ecbc00583c0a928b53fc1983a547bd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/icemanbsi/full-silex/zipball/3b24daeb4b34c8f031e56fab9bdfd5de46c260d5",
-                "reference": "3b24daeb4b34c8f031e56fab9bdfd5de46c260d5",
+                "url": "https://api.github.com/repos/icemanbsi/full-silex/zipball/d73b16195ecbc00583c0a928b53fc1983a547bd3",
+                "reference": "d73b16195ecbc00583c0a928b53fc1983a547bd3",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Several Base Classes to make full stack framework from Silex micro framework",
-            "time": "2016-11-02 07:30:43"
+            "time": "2016-11-14 09:53:46"
         },
         {
             "name": "monolog/monolog",
@@ -315,16 +315,16 @@
         },
         {
             "name": "silex/silex",
-            "version": "v2.0.3",
+            "version": "v2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silexphp/Silex.git",
-                "reference": "fd0852ebfa0a4cf1e17d746bb81962ec69bbb6d1"
+                "reference": "49ca08d853731d1635374e5019c8696cfd53c161"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silexphp/Silex/zipball/fd0852ebfa0a4cf1e17d746bb81962ec69bbb6d1",
-                "reference": "fd0852ebfa0a4cf1e17d746bb81962ec69bbb6d1",
+                "url": "https://api.github.com/repos/silexphp/Silex/zipball/49ca08d853731d1635374e5019c8696cfd53c161",
+                "reference": "49ca08d853731d1635374e5019c8696cfd53c161",
                 "shasum": ""
             },
             "require": {
@@ -364,7 +364,7 @@
                 "symfony/twig-bridge": "~2.8|^3.0",
                 "symfony/validator": "~2.8|^3.0",
                 "symfony/var-dumper": "~2.8|^3.0",
-                "twig/twig": "~1.8|~2.0"
+                "twig/twig": "~1.27|~2.0"
             },
             "type": "library",
             "extra": {
@@ -396,7 +396,7 @@
             "keywords": [
                 "microframework"
             ],
-            "time": "2016-08-22 17:50:21"
+            "time": "2016-11-06 18:09:06"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -807,16 +807,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "dff51f72b0706335131b00a7f49606168c582594"
+                "reference": "e79d363049d1c2128f133a2667e4f4190904f7f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/dff51f72b0706335131b00a7f49606168c582594",
-                "reference": "dff51f72b0706335131b00a7f49606168c582594",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/e79d363049d1c2128f133a2667e4f4190904f7f4",
+                "reference": "e79d363049d1c2128f133a2667e4f4190904f7f4",
                 "shasum": ""
             },
             "require": {
@@ -828,7 +828,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2-dev"
+                    "dev-master": "1.3-dev"
                 }
             },
             "autoload": {
@@ -862,7 +862,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2016-05-18 14:26:46"
+            "time": "2016-11-14 01:06:16"
         },
         {
             "name": "symfony/routing",
@@ -2092,16 +2092,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.27",
+            "version": "4.8.28",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c062dddcb68e44b563f66ee319ddae2b5a322a90"
+                "reference": "558a3a0d28b4cb7e4a593a4fbd2220e787076225"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c062dddcb68e44b563f66ee319ddae2b5a322a90",
-                "reference": "c062dddcb68e44b563f66ee319ddae2b5a322a90",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/558a3a0d28b4cb7e4a593a4fbd2220e787076225",
+                "reference": "558a3a0d28b4cb7e4a593a4fbd2220e787076225",
                 "shasum": ""
             },
             "require": {
@@ -2160,7 +2160,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-07-21 06:48:14"
+            "time": "2016-11-14 06:25:28"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
