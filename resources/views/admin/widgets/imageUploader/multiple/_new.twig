@@ -1,0 +1,30 @@
+<div class="row" id="newRow-{$_imageSettingName}">
+    <div class="col-sm-6">
+        <form enctype="multipart/form-data" method="POST" action="{{ baseUrl(imageUploadPath) }}">
+            {% if isSettingModel %}
+                {% set instance = attribute(instances, _imageSettingName) %}
+                <input name="setting_id" value="{% if instance.id is defined and instance.id is not empty %}{{ instance.id }}{% endif %}" type="hidden" />
+                <input name="data" value='{ "id": "{% if instance.id is defined and instance.id is not empty %}{{ instance.id }}{% endif %}", "type": "uploadOnce", "settingName": "{{ _imageSettingName }}" }' type="hidden" />
+            {% else %}
+                {% set instance = attribute(_context, instanceName) %}
+                <input name="{{ instanceName }}_id" value="{% if instance.id %}{{ instance.id }}{% endif %}" type="hidden" />
+                <input name="data" value='{ "id": "{% if instance.id is defined and instance.id is not empty %}{{ instance.id }}{% endif %}", "type": "uploadOnce", "settingName": "{{ _imageSettingName }}" }' type="hidden" />
+            {% endif %}
+            <input name="settingName" value="{{ _imageSettingName }}" type="hidden" />
+            <input name="uploadOnce" value="1" type="hidden" />
+
+            <div class="fileupload fileupload-new" data-provides="fileupload">
+                <div>
+                    <span class="btn btn-file btn-large btn-primary">
+                        <span class="fileupload-new largeText uploadOnc fileupload-upload">Upload one image, resize to all types (can change later)</span>
+                        <span class="fileupload-exists largeText uploadOnce">Upload one image, resize to all types (can change later)</span>
+                        <input type="file" name="image" />
+                    </span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-sm-6">
+        <a href="#" class="btn btn-large largeText uploadSeparately btn-primary full-width">Upload separate image for each type</a>
+    </div>
+</div>

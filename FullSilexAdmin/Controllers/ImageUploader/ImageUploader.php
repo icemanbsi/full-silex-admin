@@ -20,6 +20,10 @@ trait ImageUploader
 //    protected $imageDeletePath = 'admin/controllerName/deleteImage';
 //    protected $imageDestroyPath = 'admin/controllerName/destroyImage';
 
+    protected function setupInstanceImageAssigns($instance) {
+        return array();
+    }
+
     protected function multipleManyTypesForm()
     {
         return 'admin/widgets/imageUploader/types/_multipleManyTypes.twig';
@@ -305,25 +309,26 @@ trait ImageUploader
         );
     }
 
-    public function processDeleteImage($instance) {
+    public function processDeleteImage($instance, $additionalAssign=array()) {
+        $assigns = array();
         if (is_null($instance)) {
-            $this->app->getTemplateEngine()->assign(array(
+            $assigns = array(
                 'error' => $this->app->trans('instanceNotFound', array('model' => $this->model())),
                 'errorAttributes' => array(),
                 'instance' => $this->model()
-            ));
+            );
         }
         else {
             if ($this->imageDestroyPath != null) {
-                $field = $this->getParam('field');
+                $field = $this->request->get('field');
                 $imagesField = $instance->get($field);
                 $imageSettings = $this->getImageSettings();
                 if (!is_array($imagesField)) {
                     if(!(!$imageSettings[$field]["_config"]["multiple"] && !empty($imageSettings[$field]["options"]))){
-                        $imagesField = UtilitiesHelper::decodeJson($imagesField, true);
+                        $imagesField = json_decode($imagesField, true);
                     }
                 }
-                $position = $this->getParam('position');
+                $position = $this->request->get('position');
                 if(!empty($position) || (int)$position === 0) $imageField = $imagesField[$position];
                 else $imageField = $imagesField;
 
@@ -334,21 +339,185 @@ trait ImageUploader
                 else {
                     $image = $imageField;
                 }
-                $this->setPaths();
-                $this->app->getTemplateEngine()->assign(array(
-                    'position' => $this->getParam('position'),
-                    '_imageSettingName' => $this->getParam('setting'),
+                $assigns = array_merge($assigns,
+                    $this->setPaths(),
+                    array(
+                    'position' => $this->request->get('position'),
+                    '_imageSettingName' => $this->request->get('setting'),
                     '_image' => $image
                 ));
             }
             else {
-                $this->app->getTemplateEngine()->assign(array(
+                $assigns = array(
                     'error' => "Please set destroyPath",
                     'errorAttributes' => array(),
                     'instance' => $this->model()
-                ));
+                );
             }
         }
-        $this->render('/admin/widgets/imageUploader/multiple/_delete');
+
+        $assigns = array_merge($assigns, $additionalAssign);
+        return $this->render('/admin/widgets/imageUploader/multiple/_delete', $assigns);
+    }
+
+    public function processDestroyImage($instance, $imageSetting, $imageField, $position) {
+        if (!$instance->errors->is_empty()) {
+            try {
+                $imageSettings = $this->getImageSettings();
+                if($imageSettings[$imageSetting]["_config"]["multiple"]){
+                    $imageValue = $instance->$imageField;
+                    if (!is_array($imageValue)) {
+                        $imageValue = json_decode($imageValue, true);
+                    }
+                    $imagesAtPosition = $imageValue[$position];
+                    if (!empty($imagesAtPosition)) {
+                        if(!empty($imageSettings[$imageSetting]["types"])){ //multiple many types
+                            foreach($imagesAtPosition as $key => $image) {
+                                unlink(str_replace('/', DIRECTORY_SEPARATOR, $this->app->getPublicBasePath() . $image));
+                            }
+                        }
+                        else{ //multiple single types
+                            unlink(str_replace('/', DIRECTORY_SEPARATOR, $this->app->getPublicBasePath() . $imagesAtPosition));
+                        }
+                    }
+                    unset($imageValue[$position]);
+                    $imageValue = array_values($imageValue);
+                    $instance->$imageField = json_encode($imageValue);
+                }
+                else if(!$imageSettings[$imageSetting]["_config"]["multiple"] && !empty($imageSettings[$imageSetting]["types"])){
+                    $imageValue = $instance->$imageField;
+                    if (!is_array($imageValue)) {
+                        $imageValue = json_decode($imageValue, true);
+                    }
+                    if(!empty($imageValue) && is_array($imageValue)){
+                        foreach($imageValue as $key => $image) {
+                            unlink(str_replace('/', DIRECTORY_SEPARATOR, $this->app->getPublicBasePath() . $image));
+                        }
+                    }
+                    $instance->$imageField = "";
+                }
+                else if(!$imageSettings[$imageSetting]["_config"]["multiple"] && !empty($imageSettings[$imageSetting]["options"])){ //single one type
+                    $imageValue = $instance->$imageField;
+                    if(!empty($imageValue)){
+                        unlink(str_replace('/', DIRECTORY_SEPARATOR, $this->app->getPublicBasePath() . $imageValue));
+                    }
+                    $instance->$imageField = "";
+                }
+
+                $instance->save();
+
+                return json_encode(array(
+                    'message' => $this->app->trans('deleted'),
+                    'setting' => $imageSetting,
+                    'field' => $imageField,
+                    'position' => $position
+                ));
+            }
+            catch (\Exception $e) {
+                $this->app->log("Cannot delete data : " . $e->getMessage());
+            }
+        }
+
+        return "";
+    }
+
+    protected function getImagesValue($instance, $settingName){
+        return $instance->$settingName;
+    }
+
+    /**
+     * If pos is empty, means it creates a new row
+     */
+    public function newRow()
+    {
+        $isNew = UtilitiesHelper::toBoolean($this->request->get('new'));
+        $instanceId = $this->request->get('id');
+        $instance = call_user_func(array($this->model(), "find_by_" . $this->primaryKey), $instanceId);
+        $imageField = $this->request->get('field');
+        $imagePosition = (int)$this->request->get('pos');
+        $imageSettings = $this->getImageSettings();
+        $settingName = $this->request->get('setting');
+        $imageSetting = $imageSettings[$settingName];
+        $images = $this->getImagesValue($instance, $settingName);
+        if (empty($images)) {
+            $images = array();
+        }
+        else {
+            if (!is_array($images)) {
+                $images = json_decode($images, true);
+            }
+        }
+
+        $assigns = array_merge(
+            $this->setPaths(),
+            $this->setupInstanceImageAssigns($instance),
+            array(
+                'instanceName' => $this->instanceName,
+                '_imageSetting' => $imageSetting,
+                '_imagePos' => $imagePosition,
+                '_imageSettingName' => $settingName
+
+            )
+        );
+
+        if (count($imageSetting['types']) > 0) {
+            $newImageRow = array();
+            foreach($imageSetting['types'] as $type => $setting) {
+                $newImageRow[$type] = '';
+            }
+            if ($isNew) {
+                array_unshift($images, $newImageRow);
+                $json_encoded = json_encode($images);
+                $instance->$imageField = $json_encoded;
+                $instance->save();
+            }
+            else {
+                $image = $images[$imagePosition];
+                $assigns = array_merge($assigns, array(
+                    '_image' => $image
+                ));
+            }
+            $assigns = array_merge($assigns, array(
+                $this->instanceName => $instance->to_array()
+            ));
+            return $this->render('/admin/widgets/imageUploader/multiple/_manyTypes', $assigns);
+        }
+        else {
+            $newImageRow = '';
+            array_unshift($images, $newImageRow);
+            $json_encoded = json_encode($images);
+            $instance->$imageField = $json_encoded;
+            $instance->save();
+            $assigns = array_merge($assigns, array(
+                $this->instanceName => $instance->to_array()
+            ));
+            return $this->render('/admin/widgets/imageUploader/multiple/_oneType', $assigns);
+        }
+    }
+
+    public function moveImage()
+    {
+        $id = $this->request->get('id');
+        $from = (int)$this->request->get('position');
+        $direction = $this->request->get('direction');
+        $settingName = $this->request->get('setting');
+        $fieldName = $this->request->get('field');
+        if ($direction == 'up') {
+            $to = $from -1;
+        }
+        else {
+            $to = $from +1;
+        }
+        $instance = call_user_func(array($this->model(), "find_by_" . $this->primaryKey), $id);
+        $images = $instance->$fieldName;
+        if (!is_array($images)) {
+            $images = json_decode($images, true);
+        }
+        $imageFrom = $images[$from];
+        $images[$from] = $images[$to];
+        $images[$to] = $imageFrom;
+        $instance->$fieldName = json_encode($images);
+        $instance->save();
+        return json_encode(array('settingName' => $settingName, 'from' => $from, 'to' => $to));
     }
 }

@@ -1,0 +1,17 @@
+
+<div class="row-form imageManagerRow">
+    <div class="col-sm-3 imageFormContainer">
+        <div>{{ _imageSetting.options.description }}</div>
+        {% include "admin/widgets/imageUploader/_imageForm.tpl" with {_image:instanceImages[_imageSettingName], type:_imageSetting.options, _imageSetting:_imageSetting, _imageSettingName:_imageSettingName} %}
+    </div>
+
+    <div class="col-sm-9 text-right">
+        {% if isSettingModel is defined %}
+            {% set instance = attribute(instances, _imageSettingName) %}
+            <a href="{{ baseUrl(imageDeletePath, {id:instance.id, setting:_imageSettingName, field:'value'}) }}" data-toggle="dialog" class="btn btn-danger btn-small btnRemove hasPosition" title="{{ "Delete"|trans }}"><i class="fa fa-trash"></i> {{ "Delete Image"|trans }}</a>
+        {% else %}
+            {% set instance = attribute(_context, instanceName) %}
+            <a href="{{ baseUrl(imageDeletePath, {id=instance.id, setting:_imageSettingName, field:_imageSettingName}) }}" data-toggle="dialog" class="btn btn-danger btn-small btnRemove hasPosition" title="{{ "Delete"|trans }}"><i class="fa fa-trash"></i> {{ "Delete Image"|trans }}</a>
+        {% endif %}
+    </div>
+</div>

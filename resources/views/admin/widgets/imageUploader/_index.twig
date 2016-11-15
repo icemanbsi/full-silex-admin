@@ -1,0 +1,37 @@
+{% for _imageSettingName, _imageSetting in _imageSettings %}
+    <div class="panel panel-default image_row-{{ _imageSettingName }}">
+        <div class="panel-heading image_row-title">
+            <h4 class="text-complete bold">{{ instanceInfo }}{{ _imageSetting._config.adminName }}</h4>
+        </div>
+        <div class="panel-body">
+            <div class="row m-b-15">
+                <div class="col-sm-12 text-right">
+                    {% if _imageSetting._config.multiple %}
+                        {# If coming from ImageUploaderSetting, $isSettingModel is true #}
+                        {% if isSettingModel %}
+                            {% set imageSetting = attribute(instances, _imageSettingName) %}
+                            <a href="#" data-setting_id="{{ imageSetting.id }}" data-setting_name="{{ _imageSettingName }}" class="add_image btn btn-primary btn-small{% if _imageSetting.types %} many{% else %} one{% endif %}" title="Add New"><i class="fa fa-plus"></i></a>
+                        {% else %}
+                            {% set instanceImage = attribute(_context, instanceName) %}
+                            <a href="#" data-setting_id="{{ instanceImage.id }}" data-setting_name="{{ _imageSettingName }}" class="add_image btn btn-primary btn-small{% if _imageSetting.types %} many{% else %} one{% endif %}" title="Add New"><i class="fa fa-plus"></i></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if _imageSetting._config.multiple %}
+                {% if _imageSetting.types is defined %}
+                    {% include multipleManyTypesForm with {imageSettingName: _imageSettingName, imageSetting : _imageSetting} %}
+                {% else %}
+                    {% include multipleOneTypeForm with {imageSettingName : _imageSettingName, imageSetting : _imageSetting} %}
+                {% endif %}
+            {% elseif not _imageSetting._config.multiple %}
+                {% if _imageSetting.types is defined %}
+                    {% include singleManyTypesForm with {imageSettingName : _imageSettingName, imageSetting : _imageSetting} %}
+                {% else %}
+                    {% include singleOneTypeForm with {imageSettingName : _imageSettingName, imageSetting : _imageSetting} %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}

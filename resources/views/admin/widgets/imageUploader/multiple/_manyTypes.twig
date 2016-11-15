@@ -1,0 +1,36 @@
+<div class="row imageManagerRow">
+    <div class="col-xs-12">
+        <div class="b-grey b-t b-l b-r b-b padding-15">
+            <input type="hidden" name="position" value="{{ _imagePos }}" />
+            <div class="row">
+                <div class="col-xs-6">
+                    <h5 class="bold text-info strong positionTitle">{{ _imageSetting._config.adminName }} Position: <span class="position">{{ _imagePos }}</span></h5>
+                </div>
+                <div class="col-xs-6 text-right">
+                    {% if isSettingModel is defined %}
+                        {% set instance = attribute(instances, _imageSettingName) %}
+                        <a href="{{ baseUrl(imageMovePath, {id: instances.id, direction: "up", position: _imagePos, setting: _imageSettingName, field:"value"}) }}" class="btn btn-primary btn-small btnMoveUp hasPosition" title="{{ "Move Up"|trans }}"><i class="fa fa-arrow-up"></i></a>
+                        <a href="{{ baseUrl(imageMovePath, {id: instances.id, direction: "down", position: _imagePos, setting: _imageSettingName, field:"value"}) }}" class="btn btn-primary btn-small btnMoveDown hasPosition" title="{{ "Move Down"|trans }}"><i class="fa fa-arrow-down"></i></a>
+                        <a href="{{ baseUrl(imageDeletePath, {id: instances.id, position: _imagePos, setting: _imageSettingName, field: "value"}) }}" data-toggle="dialog" class="btn btn-danger btn-small btnRemove hasPosition" title="{{ "Delete"|trans }}"><i class="fa fa-remove"></i></a>
+                    {% else %}
+                        {% set instance = attribute(_context, _imageSettingName) %}
+                        <a href="{{ baseUrl(imageMovePath, {id:instance.id, direction:"up", position: _imagePos, setting: _imageSettingName, field: _imageSettingName}) }}" class="btn btn-primary btn-small btnMoveUp hasPosition" title="{{ "Move Up"|trans }}"><i class="fa fa-arrow-up"></i></a>
+                        <a href="{{ baseUrl(imageMovePath, {id:instance.id, direction:"down" position: _imagePos, setting:_imageSettingName, field:_imageSettingName}) }}" class="btn btn-primary btn-small btnMoveDown hasPosition" title="{{ "Move Down"|trans }}"><i class="fa fa-arrow-down"></i></a>
+                        <a href="{{ baseUrl(imageDeletePath, {id:instance.id, position:_imagePos, setting:_imageSettingName, field:_imageSettingName}) }}" data-toggle="dialog" class="btn btn-danger btn-small btnRemove hasPosition" title="{{ "Delete"|trans }}"><i class="fa fa-remove"></i></a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                {{ set i = 0 }}
+                {% for typeName, type in _imageSetting.types %}
+                    <div class="col-sm-3 imageFormContainer" {% if i % 4 == 0 %}style="margin-left: 0;"{% endif %}>
+                        <label class="text-primary bold text-uppercase m-b-5">{{ typeName }}</label>
+                        <div class="text-info m-b-10">{{ type.description }}</div>
+                        {% include "admin/widgets/imageUploader/_imageForm.twig" with {group: _imageSettingName ~ '_' ~ _imagePos, _image=_image[typeName], type: type, typeName: typeName, _imageSetting: _imageSetting, _imageSettingName:_imageSettingName, position:_imagePos} %}
+                    </div>
+                    {{ set i = i+1 }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
