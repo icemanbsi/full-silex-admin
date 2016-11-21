@@ -1,0 +1,27 @@
+<div class="row">
+    <div class="text-right p-t-5 p-b-5 p-l-10 p-r-15 m-b-10">
+        {% if isSettingModel is defined %}
+            {% set instance = attribute(instances, _imageSettingName) %}
+            <a href="{{ baseUrl(imageDeletePath, {id:instance.id, setting:_imageSettingName, field:'value'}) }}" data-toggle="dialog" class="btn btn-danger btn-small btnRemove hasPosition" title="{{ "Delete"|trans }}"><i class="fa fa-trash"></i> {{ "Delete All Images"|trans }}</a>
+        {% else %}
+            {% set instance = attribute(_context, instanceName) %}
+            <a href="{{ baseUrl(imageDeletePath, {id=instance.id, setting:_imageSettingName, field:_imageSettingName}) }}" data-toggle="dialog" class="btn btn-danger btn-small btnRemove hasPosition" title="{{ "Delete"|trans }}"><i class="fa fa-trash"></i> {{ "Delete All Images"|trans }}</a>
+        {% endif %}
+    </div>
+</div>
+{{ set i = 0 }}
+{% for typeName, type in _imageSetting.types %}
+    {% if i % 4 == 0 %}
+        <div class="row imageManagerRow">
+    {% endif %}
+    <div class="col-sm-3 imageFormContainer">
+        <label class="text-primary bold text-uppercase m-b-5">{{ typeName }}</label>
+        <div class="text-info m-b-10">{{ type.description }}</div>
+        {% set instanceImage = attribute(instanceImages, _imageSettingName) %}
+        {% include "admin/widgets/imageUploader/_imageForm.twig" with {_image: instanceImage[typeName], type:type, typeName:typeName, _imageSetting:_imageSetting, _imageSettingName:_imageSettingName} %}
+    </div>
+    {% if i % 4 == 3 || _imageSetting.types|length == i+1 %}
+        </div>
+    {% endif %}
+    {{ set i = i+1 }}
+{% endfor %}

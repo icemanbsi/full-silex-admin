@@ -28,7 +28,7 @@ class SettingsController extends CRUDController
 
     protected $successTarget = 'edit'; // index or edit, where to redirect after success
 
-    // If you don't want to create deleteForm.tpl. define this instead.
+    // If you don't want to create deleteForm.twig. define this instead.
     // Sample value: instances/destroy
     protected $destroyPath = null;
 

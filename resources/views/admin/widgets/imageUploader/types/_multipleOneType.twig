@@ -1,0 +1,3 @@
+{% for _imagePos, _image in instanceImages[_imageSettingName] %}
+    {% include "admin/widgets/imageUploader/multiple/_oneType.twig" with {_imageSettingName:_imageSettingName, _imageSetting:_imageSetting, _image:_image, _imagePos:_imagePos} %}
+{% endfor %}

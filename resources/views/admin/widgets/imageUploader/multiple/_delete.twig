@@ -1,0 +1,39 @@
+{% extends "admin/wrappers/_formDialog.twig" %}
+{% block dialogHeader %}
+    <h3 class="text-primary bold"><i class="pg-trash m-r-15"></i>Delete Image</h3>
+{% endblock %}
+{% block dialogContent %}
+    <form method="POST" action="{{ baseUrl(imageDestroyPath) }}">
+        {% include "admin/widgets/_alerts.tpl" %}
+        {% set instance = attribute(_context, instanceName) %}
+        <input type="hidden" name="{{ instanceName }}[id]" value="{{ instance.id }}"/>
+        <input type="hidden" name="position" value="{{ position }}" />
+        <input type="hidden" name="setting" value="{{ _imageSettingName }}" />
+        {% if isSettingModel %}
+            <input type="hidden" name="field" value="value" />
+        {% else %}
+            <input type="hidden" name="field" value="{{ _imageSettingName }}" />
+        {% endif %}
+
+        <div class="block-fluid">
+            <div class="row">
+                <div class="col-sm-12 largerText">
+                    <h4 class="bold">Delete this image?</h4>
+                </div>
+            </div>
+            {% if not isAjax %}
+                <div class="row m-t-30">
+                    <div class="col-sm-12">
+                        <div class="toolbar bottom TAR">
+                            <button class="btn btn-danger" id="submitForm" type="submit">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+{% endblock %}
+{% block dialogButtons %}
+    <a class="btn btn-danger" onclick="return deleteClicked();"><i class="pg-trash m-r-10"></i>Delete</a>
+    <a class="btn" data-dismiss="modal"><i class="pg-close m-r-10"></i>Close</a>
+{% endblock %}
