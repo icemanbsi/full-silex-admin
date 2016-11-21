@@ -46,7 +46,7 @@ class CRUDController extends BaseController
     protected $reorderPath = null;
     // Id column's index number. No need to set this unless you require to setup sortable manually
     // (i.e. not by simply setting $setupSortable to true. Usually for older projects).
-    // protected $sortableIdColumnIndex = 0;
+    protected $sortableIdColumnIndex = 0;
     // -- END - SORTABLE -- //
 
     // if you dealing with a large data, you can use data tables server side option.
@@ -273,6 +273,14 @@ class CRUDController extends BaseController
 
 
     // Please do not override these functions, unless you know the risk.
+
+    public function __construct()
+    {
+        if ($this->setupSortable) {
+            $this->setupSortability();
+        }
+    }
+
     protected function getTableNameQuote(){
         switch($this->app->config("dbConfig")["type"]){
             case "pgsql": return '"';
@@ -285,6 +293,59 @@ class CRUDController extends BaseController
      */
     public function getTableName($useQuote = false){
         return ($useQuote ? $this->getTableNameQuote() : "") . call_user_func(array($this->model(), "table_name")) . ($useQuote ? $this->getTableNameQuote() : "");
+    }
+
+    protected function setupSortability()
+    {
+        // Adding 'position' field into columns.
+        array_unshift($this->columns, 'position');
+
+        // Setting ID column's index.
+        $this->sortableIdColumnIndex = count($this->columns);
+
+        // Addition on $thAttributes variable to sort ascendingly on position column.
+        array_unshift($this->thAttributes, 'class="sort_asc"');
+
+        // Make all columns unsortable and hide the position column.
+        $columnDefs_r = json_decode($this->columnDefs, true);
+        $sortableAdded = false;
+        $visibleAdded = false;
+        foreach ($columnDefs_r as $index => $column) {
+            // todo: What if there is a bSortable = true and bVisible = true rules??
+            // todo: To fix this, USE TDD!
+
+            // When bSortable = false definition exists
+            if ($column['bSortable'] === false) {
+                $allIndexes = array();
+                foreach($this->columns as $key => $value) {
+                    $allIndexes[] = $key;
+                }
+                $columnDefs_r[$index]['aTargets'] = $allIndexes;
+                $sortableAdded = true;
+            }
+            // When bVisible = false definition exists
+            if ($column['bVisible'] === false) {
+                $allIndexes = array();
+                // Push indexes by one number.
+                foreach($column['aTargets'] as $targetIndex) {
+                    $allIndexes[] = $targetIndex+1;
+                }
+                $columnDefs_r[$index]['aTargets'] = $allIndexes;
+                $sortableAdded = true;
+            }
+        }
+        // If sortable / visible not added, create them.
+        if (!$sortableAdded) {
+            $allIndexes = array();
+            foreach($this->columns as $key => $value) {
+                $allIndexes[] = $key;
+            }
+            $columnDefs_r[] = array('bSortable' => false, 'aTargets' => $allIndexes);
+        }
+        if (!$visibleAdded) {
+            $columnDefs_r[] = array('bVisible' => false, 'aTargets' => array(0));
+        }
+        $this->columnDefs = json_encode($columnDefs_r);
     }
 
     public function add() {

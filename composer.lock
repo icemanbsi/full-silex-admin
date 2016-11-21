@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "icemanbsi/full-silex",
-            "version": "v1.1.25",
+            "version": "v1.1.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/icemanbsi/full-silex.git",
-                "reference": "d73b16195ecbc00583c0a928b53fc1983a547bd3"
+                "reference": "fa22a6b51fcfa233b7ad81b288cc55599b566976"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/icemanbsi/full-silex/zipball/d73b16195ecbc00583c0a928b53fc1983a547bd3",
-                "reference": "d73b16195ecbc00583c0a928b53fc1983a547bd3",
+                "url": "https://api.github.com/repos/icemanbsi/full-silex/zipball/fa22a6b51fcfa233b7ad81b288cc55599b566976",
+                "reference": "fa22a6b51fcfa233b7ad81b288cc55599b566976",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Several Base Classes to make full stack framework from Silex micro framework",
-            "time": "2016-11-14 09:53:46"
+            "time": "2016-11-14 10:02:40"
         },
         {
             "name": "monolog/monolog",
@@ -2554,16 +2554,16 @@
         },
         {
             "name": "sebastian/recursion-context",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/recursion-context.git",
-                "reference": "913401df809e99e4f47b27cdd781f4a258d58791"
+                "reference": "79860854756415e1cec8d186c9cf261cafd87dfc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/913401df809e99e4f47b27cdd781f4a258d58791",
-                "reference": "913401df809e99e4f47b27cdd781f4a258d58791",
+                "url": "https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/79860854756415e1cec8d186c9cf261cafd87dfc",
+                "reference": "79860854756415e1cec8d186c9cf261cafd87dfc",
                 "shasum": ""
             },
             "require": {
@@ -2603,7 +2603,7 @@
             ],
             "description": "Provides functionality to recursively process PHP variables",
             "homepage": "http://www.github.com/sebastianbergmann/recursion-context",
-            "time": "2015-11-11 19:50:13"
+            "time": "2016-11-14 15:54:23"
         },
         {
             "name": "sebastian/version",
