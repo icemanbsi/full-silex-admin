@@ -31,7 +31,7 @@ class CRUDController extends BaseController
 
     protected $successTarget = 'edit'; // index or edit, where to redirect after success
 
-    // If you don't want to create deleteForm.twig. define this instead.
+    // If you don't want to create deleteForm.tpl. define this instead.
     // Sample value: instances/destroy
     protected $destroyPath = array('route' => 'instances', 'method' => 'destroy');
 
@@ -678,6 +678,49 @@ class CRUDController extends BaseController
 
             return $this->render($template, $assigns);
         }
+    }
+
+    public function reorder() {
+        // Reorder positions first to fix broken data
+        $dragField = $this->getTableNameQuote() . $this->dragField . $this->getTableNameQuote();
+        call_user_func(array($this->model(), "query"), "SET @ordering = 0");
+        $sql = "UPDATE {$this->getTableName()} SET
+		    {$dragField} = (@ordering := @ordering + 1)
+		    ORDER BY {$dragField}, id ASC";
+        call_user_func(array($this->model(), "query"), $sql);
+
+        $toPosition = $this->request->get('toPosition');
+        $fromPosition = $this->request->get('fromPosition');
+        $direction = $this->request->get('direction');
+        $id = $this->request->get('id');
+        /** @var \FullSilex\Models\BaseModel $instance */
+        $instance = call_user_func(array($this->model(), "find_by_id"), $id);
+        if (!empty($instance)) {
+            if ($direction == 'back') {
+                // Adds all rows after this one's final position by 1
+                $sql =  "UPDATE {$this->getTableName()}
+              			 SET {$dragField} = {$dragField} + 1
+              			 WHERE {$dragField} >= '".$toPosition."'
+              			 AND {$dragField} < '{$fromPosition}'";
+            }
+            else {
+                // Reduce all rows before this one's final position by 1
+                $sql =  "UPDATE {$this->getTableName()}
+              			 SET {$dragField} = {$dragField} - 1
+              			 WHERE {$dragField} > '".$fromPosition."'
+              			 AND {$dragField} <= '{$toPosition}'";
+            }
+            call_user_func(array($this->model(), "query"), $sql);
+            $field = $this->dragField;
+            $instance->$field = $toPosition;
+            $instance->save();
+            if(!$instance->errors->is_empty()) {
+                $this->app->log("error happened when updating from CRUDController (model ".$this->model()."): " . $instance->errors->full_messages());
+                $this->app->log("params are: " . print_r($this->request->attributes, true));
+            }
+        }
+
+        return "";
     }
 
 
