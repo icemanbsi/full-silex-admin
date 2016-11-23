@@ -21,7 +21,7 @@ options :
     <span class="help">{{ help }}</span>
     {% endif %}
     {% if type is defined and type == "textarea" %}
-        <textarea name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if required is defined %}validate[required]{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %}>{{ value|escape }}</textarea>
+        <textarea name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if required is defined %}validate[required]{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %} style="height: 120px;">{{ value|escape }}</textarea>
     {% elseif type is defined and type == "password" %}
         <input type="password" name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" value="{{ value|escape }}" class="form-control {% if required is defined %}validate[required,maxSize[255]]{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
     {% else %}

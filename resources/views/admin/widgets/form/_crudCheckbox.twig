@@ -8,7 +8,7 @@ Options :
 #}
 {% set instance = attribute(_context, instanceName) %}
 {% set value = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : '') %}
-<div class="form-group form-group-default {%  if required is defined %}required{% if %}">
+<div class="form-group form-group-default {%  if required is defined %}required{% endif %}">
     <div class="checkbox check-primary">
         <input type="checkbox" value="1" name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" {% if value == 1 %}checked{% endif %} />
         <label for="{{ instanceName }}_{{ columnName }}">{% if customTitle is defined and customTitle is not empty %}{{ customTitle|capitalize }}{% else %}{{ columnName|capitalize }}{% endif %}</label>

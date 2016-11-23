@@ -134,8 +134,8 @@ class CRUDController extends BaseController
                 'field'     => 't_id',
                 'rawSql'    => 't.id',
                 'formatter' => function( $value, $array ) {
-                    return  '<a title="View" href="'.$this->app->getRouter()->getUrl($this->editPath, array('id' => $value)).'" data-toggle="dialog"><span class="fa fa-pencil"></span></a>
-                                  <a title="Delete" href="'.$this->app->getRouter()->getUrl($this->deletePath, array('id' => $value)).'" data-toggle="dialog"><span class="fa fa-trash"></span></a>';
+                    return  '<a title="View" href="'.$this->app->url($this->editPath["route"], array('method' => $this->editPath["method"], 'id' => $value)).'" data-toggle="dialog"><span class="fa fa-pencil"></span></a>
+                                  <a title="Delete" href="'.$this->app->url($this->deletePath["route"], array('method' => $this->editPath["method"], 'id' => $value)).'" data-toggle="dialog"><span class="fa fa-trash"></span></a>';
                 })
         );
     }
@@ -192,7 +192,7 @@ class CRUDController extends BaseController
             $sql = "$selectSql $order $limit";
         }
         else {
-            $selectSql = "SELECT SQL_CALC_FOUND_ROWS " . $this->pluckString($this->dtsFields, 'db') . "
+            $selectSql = "SELECT " . $this->pluckString($this->dtsFields, 'db') . "
                  FROM {$this->getTableName(true)} t
                  $where";
 
