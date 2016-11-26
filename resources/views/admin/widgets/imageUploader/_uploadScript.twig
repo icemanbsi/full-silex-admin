@@ -210,10 +210,10 @@
         {% endif %}
 
         if (typeof(existingRow) == 'undefined' || existingRow == false) {
-            url = '{{ baseUrl(imageNewRowPath) }}?id='+instanceId+'&setting='+settingName+'&field='+fieldName+'&pos='+position+'&new=1';
+            url = '{{ baseUrl(imageNewRowPath.route, {method: imageNewRowPath.method}) }}?id='+instanceId+'&setting='+settingName+'&field='+fieldName+'&pos='+position+'&new=1';
         }
         else {
-            url = '{{ baseUrl(imageNewRowPath) }}?id='+instanceId+'&setting='+settingName+'&field='+fieldName+'&pos='+position;
+            url = '{{ baseUrl(imageNewRowPath.route, {method: imageNewRowPath.method}) }}?id='+instanceId+'&setting='+settingName+'&field='+fieldName+'&pos='+position;
         }
 
         if (position >= $rowForms.length) {

@@ -9,14 +9,14 @@
                 <div class="col-xs-6 text-right">
                     {% if isSettingModel is defined %}
                         {% set instance = attribute(instances, _imageSettingName) %}
-                        <a href="{{ baseUrl(imageMovePath, {id: instance.id, direction: "up", position:_imagePos, setting:_imageSettingName, field:'value'}) }}" class="btn btn-primary btn-small btnMoveUp hasPosition" title="{{ "Move Up"|trans }}"><i class="fa fa-arrow-up"></i></a>
-                        <a href="{{ baseUrl(imageMovePath, {id: instance.id, direction: "down", position:_imagePos, setting:_imageSettingName, field:'value'}) }}" class="btn btn-primary btn-small btnMoveDown hasPosition" title="{{ "Move Down"|trans }}"><i class="fa fa-arrow-down"></i></a>
-                        <a href="{{ baseUrl(imageDeletePath, {id: instance.id, position: _imagePos, setting: _imageSettingName, field:'value'}) }}" data-toggle="dialog" class="btn btn-danger btn-small btnRemove hasPosition" title="{{ "Delete"|trans }}"><i class="fa fa-remove"></i></a>
+                        <a href="{{ baseUrl(imageMovePath.route, {method:imageMovePath.method, id: instance.id, direction: "up", position:_imagePos, setting:_imageSettingName, field:'value'}) }}" class="btn btn-primary btn-small btnMoveUp hasPosition" title="{{ "Move Up"|trans }}"><i class="fa fa-arrow-up"></i></a>
+                        <a href="{{ baseUrl(imageMovePath.route, {method:imageMovePath.method, id: instance.id, direction: "down", position:_imagePos, setting:_imageSettingName, field:'value'}) }}" class="btn btn-primary btn-small btnMoveDown hasPosition" title="{{ "Move Down"|trans }}"><i class="fa fa-arrow-down"></i></a>
+                        <a href="{{ baseUrl(imageDeletePath.route, {method:imageDeletePath.method, id: instance.id, position: _imagePos, setting: _imageSettingName, field:'value'}) }}" data-toggle="dialog" class="btn btn-danger btn-small btnRemove hasPosition" title="{{ "Delete"|trans }}"><i class="fa fa-remove"></i></a>
                     {% else %}
                         {% set instance = attribute(_context, _imageSettingName) %}
-                        <a href="{{ baseUrl(imageMovePath, {id:instance.id, direction:"up", position:_imagePos, setting:_imageSettingName, field:_imageSettingName}) }}" class="btn btn-primary btn-small btnMoveUp hasPosition" title="{{ "Move Up"|trans }}"><i class="fa fa-arrow-up"></i></a>
-                        <a href="{{ baseUrl(imageMovePath, {id:instance.id, direction:"down", position:_imagePos, setting:_imageSettingName, field:_imageSettingName}) }}" class="btn btn-primary btn-small btnMoveDown hasPosition" title="{{ "Move Down"|trans }}"><i class="fa fa-arrow-down"></i></a>
-                        <a href="{{ baseUrl(imageDeletePath, {id: instance.id, position:_imagePos, setting:_imageSettingName, field:_imageSettingName}) }}" data-toggle="dialog" class="btn btn-danger btn-small btnRemove hasPosition" title="{{ "Delete"|trans }}"><i class="fa fa-remove"></i></a>
+                        <a href="{{ baseUrl(imageMovePath.route, {method:imageMovePath.method, id:instance.id, direction:"up", position:_imagePos, setting:_imageSettingName, field:_imageSettingName}) }}" class="btn btn-primary btn-small btnMoveUp hasPosition" title="{{ "Move Up"|trans }}"><i class="fa fa-arrow-up"></i></a>
+                        <a href="{{ baseUrl(imageMovePath.route, {method:imageMovePath.method, id:instance.id, direction:"down", position:_imagePos, setting:_imageSettingName, field:_imageSettingName}) }}" class="btn btn-primary btn-small btnMoveDown hasPosition" title="{{ "Move Down"|trans }}"><i class="fa fa-arrow-down"></i></a>
+                        <a href="{{ baseUrl(imageDeletePath.route, {method:imageDeletePath.method, id: instance.id, position:_imagePos, setting:_imageSettingName, field:_imageSettingName}) }}" data-toggle="dialog" class="btn btn-danger btn-small btnRemove hasPosition" title="{{ "Delete"|trans }}"><i class="fa fa-remove"></i></a>
                     {% endif %}
                 </div>
             </div>

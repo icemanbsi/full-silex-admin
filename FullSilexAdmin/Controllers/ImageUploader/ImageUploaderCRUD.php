@@ -10,11 +10,11 @@ trait ImageUploaderCRUD
     use ImageUploader;
 
     // IMPORTANT: Add the following to your Controller:
-//    protected $imageMovePath = 'admin/controllerName/moveImage';
-//    protected $imageNewRowPath = 'admin/controllerName/newRow';
-//    protected $imageUploadPath = 'admin/controllerName/uploadImage';
-//    protected $imageDeletePath = 'admin/controllerName/deleteImage';
-//    protected $imageDestroyPath = 'admin/controllerName/destroyImage';
+//    protected $imageMovePath    = array("route" => 'admin/controllerName', "method" => 'moveImage');
+//    protected $imageNewRowPath  = array("route" => 'admin/controllerName', "method" => 'newRow');
+//    protected $imageUploadPath  = array("route" => 'admin/controllerName', "method" => 'uploadImage');
+//    protected $imageDeletePath  = array("route" => 'admin/controllerName', "method" => 'deleteImage');
+//    protected $imageDestroyPath = array("route" => 'admin/controllerName', "method" => 'destroyImage');
 
     protected function getImageSettings()
     {

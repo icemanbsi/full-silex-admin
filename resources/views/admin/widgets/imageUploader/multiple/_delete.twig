@@ -3,7 +3,7 @@
     <h3 class="text-primary bold"><i class="pg-trash m-r-15"></i>Delete Image</h3>
 {% endblock %}
 {% block dialogContent %}
-    <form method="POST" action="{{ baseUrl(imageDestroyPath) }}">
+    <form method="POST" action="{{ baseUrl(imageDestroyPath.route, {method: imageDestroyPath.method}) }}">
         {% include "admin/widgets/_alerts.tpl" %}
         {% set instance = attribute(_context, instanceName) %}
         <input type="hidden" name="{{ instanceName }}[id]" value="{{ instance.id }}"/>
