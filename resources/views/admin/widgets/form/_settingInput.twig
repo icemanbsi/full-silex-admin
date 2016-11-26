@@ -10,7 +10,7 @@ Options :
 
 #}
 {% set setting = (attribute(_context, settingName) is defined ? attribute(_context, settingName) : "") %}
-<div class="form-group form-group-default {% if required %}required{% endif %} {% if type is defined and type == "timepicker" %}bootstrap-timepicker input-group{% endif %}">
+<div class="form-group form-group-default {% if required is defined %}required{% endif %} {% if type is defined and type == "timepicker" %}bootstrap-timepicker input-group{% endif %}">
     <label for="{{ settingName }}">{% if customTitle is defined and customTitle is not empty %}{{ customTitle|capitalize }}{% else %}{{ setting.description|capitalize }}{% endif %}</label>
     {% if help is defined and help != "" %}
         <span class="help">{{ help }}</span>

@@ -1,0 +1,55 @@
+{#
+
+options :
+    - columnName (req)      : to set field name
+    - customTitle (opt)     : title or field name
+    - customClass (opt)     : class or validation class name
+    - required (opt)        : if this field is required
+    - readOnly (opt)        : if this field is readonly
+    - help (opt)            : help text - e.g. "25/12/2013"
+
+#}
+
+{% if customTitle is not defined or customTitle is empty %}
+    {% set customTitle = columnName|capitalize %}
+{% endif %}
+
+{% if customClass is not defined or customClass is empty %}
+    {% if required is defined %}
+        {% set customClass = 'validate[required, maxSize[255]]' %}
+    {% else %}
+        {% set customClass = 'validate[maxSize[255]]' %}
+    {% endif %}
+{% endif %}
+
+{% set instance = attribute(_context, instanceName) %}
+{% set value = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : '') %}
+
+<div class="block-fluid tabbable">
+
+    <ul class="nav nav-tabs">
+        {% for key, lang in languages %}
+            <li {% if key == language %}class="active"{% endif %}>
+                <a data-toggle="tab" href="#{{ columnName }}-{{ key }}">{{ lang }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content" style="padding: 0 0 15px;">
+        {% for key, lang in languages %}
+            <div class="tab-pane {% if key == language %}active{% endif %}" id="{{ columnName }}-{{ key }}">
+
+                <div class="form-group form-group-default {% if required is defined %}required{% endif %}">
+                    <label for="{{ instanceName }}_{{ columnName }}_{{ key }}">{{ customTitle }}</label>
+                    {% if help is defined and help != "" %}
+                        <span class="help">{{ help }}</span>
+                    {% endif %}
+
+                    <input type="text" name="{{ instanceName }}[{{ columnName }}][{{ key }}]" id="{{ instanceName }}_{{ columnName }}_{{ key }}" value="{{ value|modelTranslator(key)|escape }}" class="form-control {{ customClass }}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+
+</div>

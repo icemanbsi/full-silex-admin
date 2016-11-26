@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Trio-1602
- * Date: 11/14/16
- * Time: 4:35 PM
- */
 
 namespace FullSilexAdmin\Controllers\ImageUploader;
 

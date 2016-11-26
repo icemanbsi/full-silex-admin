@@ -1,17 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Trio-1602
- * Date: 11/15/16
- * Time: 11:42 AM
- */
 
 namespace FullSilexAdmin\Controllers\ImageUploader;
 
 
 use FullSilex\Helpers\TextHelper;
 
-class ImageUploaderSetting
+trait ImageUploaderSetting
 {
     use ImageUploader;
 // IMPORTANT: Add the following to your Controller:

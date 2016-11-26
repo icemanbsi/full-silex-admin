@@ -1,0 +1,28 @@
+{#
+
+options :
+    - columnName (req)      : to set field name
+    - customTitle (opt)     : title or field name
+    - required (opt)        : if this field is required
+    - readOnly (opt)        : if this field is readonly
+    - help (opt)            : help text - e.g. "25/12/2013"
+
+#}
+{% if customTitle is not defined or customTitle is empty %}
+    {% set customTitle = columnName|capitalize %}
+{% endif %}
+
+{% set instance = attribute(_context, instanceName) %}
+{% set value = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : now) %}
+<div class="form-group form-group-default {% if required is defined %}required{% endif %} input-group">
+    <label for="{{ instanceName }}_{{ columnName }}">{{ customTitle }}</label>
+    {% if help is defined and help != "" %}
+        <span class="help">{{ help }}</span>
+    {% endif %}
+    
+    <input type="text" name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" value="{{ value|date('Y-m-d H:i:s') }}" class="form-control datepicker {{ customClass }}" {% if readOnly is defined %}readonly="readonly"{% endif %} placeholder="Pick a date"/>
+
+    <span class="input-group-addon">
+        <i class="fa fa-calendar"></i>
+    </span>
+</div>

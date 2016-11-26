@@ -5,16 +5,17 @@ Options :
     - settingName (req)     : to set field name
     - required (opt)        : if this field is required
     - help (opt)            : help text - e.g. "25/12/2013"
+    - enableEditor (opt)    : enable text editor
 
 #}
 {% set setting = (attribute(_context, settingName) is defined ? attribute(_context, settingName) : "") %}
-<div class="form-group form-group-default {% if required is defined %}required{% endif %}">
+<div class="form-group {% if enableEditor is not defined %}form-group-default{% endif %} {% if required is defined %}required{% endif %}">
     <label for="{{ settingName }}">{% if customTitle is defined and customTitle is not empty %}{{ customTitle|capitalize }}{% else %}{{ setting.description|capitalize }}{% endif %}</label>
     {% if help is defined and help != "" %}
         <span class="help">{{ help }}</span>
     {% endif %}
 
-    {% if enableEditor is defined %}<div class="summernote-wrapper" style="margin: auto -12px -4px;">{% endif %}
+    {% if enableEditor is defined %}<div class="summernote-wrapper">{% endif %}
         <textarea name="{{ settingName }}" id="{{ settingName }}" style="height: 100px; resize: vertical; line-height: 20px; margin-top: -1px;" class="form-control {% if required is defined %}validate[required]{% endif %} {% if enableEditor is defined %}summernote{% endif %}">{{ setting.value|escape }}</textarea>
-    {% if enableEditor is defined %}</div>{% endif %}
+        {% if enableEditor is defined %}</div>{% endif %}
 </div>
