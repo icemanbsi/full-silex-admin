@@ -2,15 +2,15 @@
     {% if _imageSetting._config.multiple %}
         {% if _imageSetting.types is defined %}
             <script id="template-{{ _imageSettingName }}" type="html/template">
-                {% include "admin/widgets/imageUploader/multiple/_manyTypes.twig" with {_imageSettingName:_imageSettingName, _imageSetting:_imageSetting} %}
+                {% include "admin/widgets/imageUploader/multiple/_manyTypes.twig" with {_imageSettingName:_imageSettingName, _imageSetting:_imageSetting, _imagePos: 0, _image: {}} %}
             </script>
         {% else %}
             <script id="template-{{ _imageSettingName }}" type="html/template">
-                {% include "admin/widgets/imageUploader/multiple/_oneType.twig" with {_imageSettingName:_imageSettingName, _imageSetting:_imageSetting} %}
+                {% include "admin/widgets/imageUploader/multiple/_oneType.twig" with {_imageSettingName:_imageSettingName, _imageSetting:_imageSetting, _imagePos: 0, _image: {}} %}
             </script>
         {% endif %}
         <script id="template-{{ _imageSettingName }}-new" type="html/template">
-            {% include file="admin/widgets/imageUploader/multiple/_new.twig" with {_imageSettingName:_imageSettingName, _imageSetting:_imageSetting} %}
+            {% include "admin/widgets/imageUploader/multiple/_new.twig" with {_imageSettingName:_imageSettingName, _imageSetting:_imageSetting} %}
         </script>
     {% endif %}
 {% endfor %}
@@ -113,7 +113,7 @@
                                 }
                                 else{
                                     var $rowForms = $('.image_row-'+settingName + ' .panel-body > .imageManagerRow:not(#newRow-'+settingName+')');
-                                    $rowForms.find(".fileupload .thumbnail").html('<div class="emptyInfo">{lang value="No Image"}</div>');
+                                    $rowForms.find(".fileupload .thumbnail").html('<div class="emptyInfo">{{ "No Image"|trans }}</div>');
                                 }
                             }
                             if (data.error) {
@@ -410,7 +410,7 @@
     $(document).on('change', '.fileupload [type="file"]', function(e) {
         var text = $(this).val();
         if(!text) {
-            $(this).closest(".fileupload").find(".thumbnail").html('<div class="emptyInfo">{lang value="No Image"}</div>');
+            $(this).closest(".fileupload").find(".thumbnail").html('<div class="emptyInfo">{{ "No Image"|trans }}</div>');
         }
         else{
             var img = $('<img/>');

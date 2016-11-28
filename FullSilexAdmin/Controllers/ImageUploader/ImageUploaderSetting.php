@@ -15,6 +15,13 @@ trait ImageUploaderSetting
 //    protected $imageDeletePath  = array("route" => 'admin/controllerName', "method" => 'deleteImage');
 //    protected $imageDestroyPath = array("route" => 'admin/controllerName', "method" => 'destroyImage');
 
+//    protected $imagesTemplatePath = "/admin/widgets/imageUploader/images";
+//    protected $pageTitle = "Image Setting";
+
+    protected function getBackUrl(){
+        return $this->app->url("admin/controllerName", array("method" => "index"));
+    }
+
     protected function getImageSettings()
     {
         return array(
@@ -87,10 +94,12 @@ trait ImageUploaderSetting
             $this->setPaths(),
             array(
                 '_imageSettings' => $imageSettings,
-                'indexContent' => $this->fetch('/admin/widgets/imageUploader/_index', array('_imageSettings' => $imageSettings))
+                'pageTitle'         => $this->pageTitle,
+                'backUrl'           => $this->getBackUrl()
             )
         );
-        return $this->render('images', $assigns);
+        $assigns['indexContent'] = $this->render('/admin/widgets/imageUploader/_index', $assigns);
+        return $this->render($this->imagesTemplatePath, $assigns);
     }
 
     /**
@@ -136,7 +145,7 @@ trait ImageUploaderSetting
     {
         // Find instance
         $instance = call_user_func(array($this->model(), "find_by_name"), $this->request->get('setting'));
-        return $this->processDeleteImage($instance, array('instanceName' => 'setting', 'setting' => $instance->export(true), 'isSettingModel' => true));
+        return $this->processDeleteImage($instance, array('instanceName' => 'setting', 'setting' => $instance->to_array(), 'isSettingModel' => true));
     }
 
     public function destroyImage()

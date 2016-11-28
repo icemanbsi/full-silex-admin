@@ -1,0 +1,29 @@
+{% extends "admin/wrappers/_main.twig" %}
+
+{% block header %}
+    <title>{{ pageTitle|capitalize }} - Image Manager</title>
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+        {% include "admin/widgets/_alerts.twig" %}
+        <div class="panel panel-transparent">
+            <div class="panel-heading bg-master">
+                <h2 class="text-primary bold"><i class="fa fa-image"></i> {{ pageTitle|capitalize }} - Image Manager</h2>
+            </div>
+            <div class="panel-body ">
+                <div class="row m-b-10">
+                    <div class="col-sm-12">
+                        <a href="{{ backUrl }}" class="backlink btn btn-warning">Back</a>
+                    </div>
+                </div>
+
+                {{ indexContent|raw }}
+                {% block uploadScript %}
+                {% include "admin/widgets/imageUploader/_uploadScript.twig" %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

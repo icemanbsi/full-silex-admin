@@ -9,9 +9,12 @@ namespace FullSilexAdmin\Models;
 
 use FullSilex\Models\BaseModel;
 use FullSilex\Libraries\EncryptionClass\EncryptionClass;
+use FullSilex\Models\Traits\HasImages;
 
 class Setting extends BaseModel
 {
+    use HasImages;
+
     static $table_name = "setting";
 
     static $before_save = array('beforeSave');

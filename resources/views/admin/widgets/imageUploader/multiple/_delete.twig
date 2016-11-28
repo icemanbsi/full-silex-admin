@@ -4,7 +4,7 @@
 {% endblock %}
 {% block dialogContent %}
     <form method="POST" action="{{ baseUrl(imageDestroyPath.route, {method: imageDestroyPath.method}) }}">
-        {% include "admin/widgets/_alerts.tpl" %}
+        {% include "admin/widgets/_alerts.twig" %}
         {% set instance = attribute(_context, instanceName) %}
         <input type="hidden" name="{{ instanceName }}[id]" value="{{ instance.id }}"/>
         <input type="hidden" name="position" value="{{ position }}" />

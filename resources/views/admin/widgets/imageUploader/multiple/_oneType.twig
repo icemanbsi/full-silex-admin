@@ -23,7 +23,7 @@
             <div class="row">
                 <div class="col-sm-3 imageFormContainer">
                     <div>{{ _imageSetting.options.description }}</div>
-                    {% include "admin/widgets/imageUploader/_imageForm.tpl" with {group: _imageSettingName ~ '_' ~ _imagePos, _image:_image, _imageSetting:_imageSetting, _imageSettingName:_imageSettingName, position:_imagePos} %}
+                    {% include "admin/widgets/imageUploader/_imageForm.twig" with {group: _imageSettingName ~ '_' ~ _imagePos, _image:_image, _imageSetting:_imageSetting, _imageSettingName:_imageSettingName, position:_imagePos} %}
                 </div>
             </div>
         </div>

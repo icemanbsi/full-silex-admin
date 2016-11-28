@@ -1,7 +1,7 @@
 {% for _imageSettingName, _imageSetting in _imageSettings %}
     <div class="panel panel-default image_row-{{ _imageSettingName }}">
         <div class="panel-heading image_row-title">
-            <h4 class="text-complete bold">{{ instanceInfo }}{{ _imageSetting._config.adminName }}</h4>
+            <h4 class="text-complete bold">{{ _imageSetting._config.adminName }}</h4>
         </div>
         <div class="panel-body">
             <div class="row m-b-15">
@@ -10,10 +10,10 @@
                         {# If coming from ImageUploaderSetting, $isSettingModel is true #}
                         {% if isSettingModel %}
                             {% set imageSetting = attribute(instances, _imageSettingName) %}
-                            <a href="#" data-setting_id="{{ imageSetting.id }}" data-setting_name="{{ _imageSettingName }}" class="add_image btn btn-primary btn-small{% if _imageSetting.types %} many{% else %} one{% endif %}" title="Add New"><i class="fa fa-plus"></i></a>
+                            <a href="#" data-setting_id="{{ imageSetting.id }}" data-setting_name="{{ _imageSettingName }}" class="add_image btn btn-primary btn-small{% if _imageSetting.types is defined %} many{% else %} one{% endif %}" title="Add New"><i class="fa fa-plus"></i></a>
                         {% else %}
                             {% set instanceImage = attribute(_context, instanceName) %}
-                            <a href="#" data-setting_id="{{ instanceImage.id }}" data-setting_name="{{ _imageSettingName }}" class="add_image btn btn-primary btn-small{% if _imageSetting.types %} many{% else %} one{% endif %}" title="Add New"><i class="fa fa-plus"></i></a>
+                            <a href="#" data-setting_id="{{ instanceImage.id }}" data-setting_name="{{ _imageSettingName }}" class="add_image btn btn-primary btn-small{% if _imageSetting.types is defined %} many{% else %} one{% endif %}" title="Add New"><i class="fa fa-plus"></i></a>
                         {% endif %}
                     {% endif %}
                 </div>

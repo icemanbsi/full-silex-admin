@@ -86,10 +86,10 @@ trait ImageUploaderCRUD
             $this->setupInstanceAssigns($instance),
             $this->setPaths(),
             array(
-                '_imageSettings' => $imageSettings,
-                'indexContent' => $this->render('/admin/widgets/imageUploader/_index', array('_imageSettings' => $imageSettings))
+                '_imageSettings' => $imageSettings
             )
         );
+        $assigns['indexContent'] = $this->render('/admin/widgets/imageUploader/_index', $assigns);
         return $this->render('images', $assigns);
     }
 

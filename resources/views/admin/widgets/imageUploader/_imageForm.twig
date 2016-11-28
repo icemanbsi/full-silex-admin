@@ -14,7 +14,7 @@
         <div class="fileupload-preview thumbnail">
             {% if _image is defined and _image is not empty %}
                 <input type="hidden" name="imageUrl" value="{{ publicUrl(_image) }}" />
-                <a href="{{ publicUrl(_image) }}" class="fb" rel="{{ group }}"><img src="{{ publicUrl(_image) }}" /></a>
+                <a href="{{ publicUrl(_image) }}" class="fb" rel="{% if group is defined and group is not empty %}{{ group }}{% endif %}"><img src="{{ publicUrl(_image) }}" /></a>
             {% else %}
                 <div class="emptyInfo">{{ "No Image"|trans }}</div>
             {% endif %}

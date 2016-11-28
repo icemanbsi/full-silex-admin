@@ -54,7 +54,7 @@ trait ImageUploader
                 'overwrite' => false
             ), $options);
             /** delete previous images */
-            if (!empty($oldFile) && file_exists($oldFile)) {
+            if (!empty($oldFile) && $oldFile != '/' && $oldFile != $this->app->getPublicBasePath() && file_exists($oldFile)) {
                 unlink($oldFile);
             }
             $path = ImageProcessor::resize($tmp, $options);
@@ -81,7 +81,7 @@ trait ImageUploader
         $uploadOnce = UtilitiesHelper::toBoolean($this->request->get('uploadOnce',0));
         $uploadedImages = array();
         $error = null;
-        $type = $this->request->get('type');
+        $type = $this->request->get('type', '');
         $settingName = $this->request->get('settingName');
         $validFormats = array("jpg", "png", "gif", "bmp","jpeg");
         $imageSettings = $this->getImageSettings();
@@ -121,13 +121,13 @@ trait ImageUploader
                                 'outputFilename' => str_replace(" ", "-", $name)
                             );
                             $instanceImages = $instance->$imageFieldName;
-                            if (is_string($instanceImages) && $imageSetting["types"]) {
+                            if (is_string($instanceImages) && isset($imageSetting["types"])) {
                                 $instanceImages = json_decode($instanceImages, true);
                             }
 
                             if ($uploadOnce) {
                                 // Upload once can only be used by multiple images.
-                                if ($imageSetting['types']) {
+                                if (isset($imageSetting['types'])) {
                                     // Many types
                                     $newInstanceImage = array();
                                     foreach($imageSetting['types'] as $key => $typeOptions) {
@@ -160,7 +160,7 @@ trait ImageUploader
                             }
                             else {
                                 // Upload one image from "change" button.
-                                if ($imageSetting['types']) {
+                                if (isset($imageSetting['types'])) {
                                     // Many types
                                     if ($imageSetting['_config']['multiple']) {
                                         // multiple images
@@ -314,16 +314,24 @@ trait ImageUploader
         }
         else {
             if ($this->imageDestroyPath != null) {
-                $field = $this->request->get('field');
-                $imagesField = $instance->get($field);
+                $field = $this->request->get('field', '');
+                $setting = $this->request->get('setting', '');
+                if($setting != "" && $setting != $field && $field == "value"){
+                    $field = $setting; // settingModel
+                    $imagesField = $instance->value;
+                }
+                else{
+                    $imagesField = $instance->$field;
+                }
+
                 $imageSettings = $this->getImageSettings();
                 if (!is_array($imagesField)) {
                     if(!(!$imageSettings[$field]["_config"]["multiple"] && !empty($imageSettings[$field]["options"]))){
                         $imagesField = json_decode($imagesField, true);
                     }
                 }
-                $position = $this->request->get('position');
-                if(!empty($position) || (int)$position === 0) $imageField = $imagesField[$position];
+                $position = $this->request->get('position', -1);
+                if((!empty($position) || (int)$position === 0) && $position > -1) $imageField = $imagesField[$position];
                 else $imageField = $imagesField;
 
                 if (is_array($imageField)) {
@@ -336,10 +344,11 @@ trait ImageUploader
                 $assigns = array_merge($assigns,
                     $this->setPaths(),
                     array(
-                    'position' => $this->request->get('position'),
-                    '_imageSettingName' => $this->request->get('setting'),
-                    '_image' => $image
-                ));
+                        'position' => $this->request->get('position'),
+                        '_imageSettingName' => $this->request->get('setting'),
+                        '_image' => $image,
+                        'isAjax' => $this->app->isAjax()
+                    ));
             }
             else {
                 $assigns = array(
@@ -355,7 +364,7 @@ trait ImageUploader
     }
 
     public function processDestroyImage($instance, $imageSetting, $imageField, $position) {
-        if (!$instance->errors->is_empty()) {
+        if (empty($instance->errors) || !$instance->errors->is_empty()) {
             try {
                 $imageSettings = $this->getImageSettings();
                 if($imageSettings[$imageSetting]["_config"]["multiple"]){
@@ -409,10 +418,15 @@ trait ImageUploader
             }
             catch (\Exception $e) {
                 $this->app->log("Cannot delete data : " . $e->getMessage());
+                return json_encode(array(
+                    'error' => $this->app->trans('cannot delete image. Unknown Error Occured')
+                ));
             }
         }
 
-        return "";
+        return json_encode(array(
+            'error' => $this->app->trans('file not found')
+        ));
     }
 
     protected function getImagesValue($instance, $settingName){
