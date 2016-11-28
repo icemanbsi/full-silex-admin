@@ -121,7 +121,7 @@ trait ImageUploader
                                 'outputFilename' => str_replace(" ", "-", $name)
                             );
                             $instanceImages = $instance->$imageFieldName;
-                            if (is_string($instanceImages) && isset($imageSetting["types"])) {
+                            if (is_string($instanceImages) && (isset($imageSetting["types"]) || $imageSetting["_config"]["multiple"])) {
                                 $instanceImages = json_decode($instanceImages, true);
                             }
 
@@ -223,7 +223,7 @@ trait ImageUploader
                                         try {
                                             $path = $this->processTempImage($tmp, $options, $oldFile);
                                             $instanceImages[$position] = $path;
-                                            $instance->$imageFieldName = $instanceImages;
+                                            $instance->$imageFieldName = json_encode($instanceImages);
                                             $uploadedImages[] = array(
                                                 'data' => $this->request->get('data'),
                                                 'path' => $instanceImages[$position],
@@ -460,15 +460,15 @@ trait ImageUploader
             $this->setPaths(),
             $this->setupInstanceImageAssigns($instance),
             array(
-                'instanceName' => $this->instanceName,
-                '_imageSetting' => $imageSetting,
-                '_imagePos' => $imagePosition,
-                '_imageSettingName' => $settingName
-
+                'instanceName'      => $this->instanceName,
+                '_imageSetting'     => $imageSetting,
+                '_imagePos'         => $imagePosition,
+                '_imageSettingName' => $settingName,
+                '_image'            => array()
             )
         );
 
-        if (count($imageSetting['types']) > 0) {
+        if (isset($imageSetting['types']) && count($imageSetting['types']) > 0) {
             $newImageRow = array();
             foreach($imageSetting['types'] as $type => $setting) {
                 $newImageRow[$type] = '';

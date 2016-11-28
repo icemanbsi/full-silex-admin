@@ -9,7 +9,7 @@
         <input type="hidden" name="{{ instanceName }}[id]" value="{{ instance.id }}"/>
         <input type="hidden" name="position" value="{{ position }}" />
         <input type="hidden" name="setting" value="{{ _imageSettingName }}" />
-        {% if isSettingModel %}
+        {% if isSettingModel is defined and isSettingModel %}
             <input type="hidden" name="field" value="value" />
         {% else %}
             <input type="hidden" name="field" value="{{ _imageSettingName }}" />

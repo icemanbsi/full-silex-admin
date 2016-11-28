@@ -8,7 +8,7 @@
                 <div class="col-sm-12 text-right">
                     {% if _imageSetting._config.multiple %}
                         {# If coming from ImageUploaderSetting, $isSettingModel is true #}
-                        {% if isSettingModel %}
+                        {% if isSettingModel is defined and isSettingModel %}
                             {% set imageSetting = attribute(instances, _imageSettingName) %}
                             <a href="#" data-setting_id="{{ imageSetting.id }}" data-setting_name="{{ _imageSettingName }}" class="add_image btn btn-primary btn-small{% if _imageSetting.types is defined %} many{% else %} one{% endif %}" title="Add New"><i class="fa fa-plus"></i></a>
                         {% else %}

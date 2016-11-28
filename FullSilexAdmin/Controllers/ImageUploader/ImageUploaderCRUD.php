@@ -16,6 +16,13 @@ trait ImageUploaderCRUD
 //    protected $imageDeletePath  = array("route" => 'admin/controllerName', "method" => 'deleteImage');
 //    protected $imageDestroyPath = array("route" => 'admin/controllerName', "method" => 'destroyImage');
 
+//    protected $imagesTemplatePath = "/admin/widgets/imageUploader/images";
+//    protected $pageTitle = "Image Setting";
+
+    protected function getBackUrl(){
+        return $this->app->url("admin/controllerName", array("method" => "index"));
+    }
+
     protected function getImageSettings()
     {
         return array(
@@ -86,11 +93,13 @@ trait ImageUploaderCRUD
             $this->setupInstanceAssigns($instance),
             $this->setPaths(),
             array(
-                '_imageSettings' => $imageSettings
+                '_imageSettings' => $imageSettings,
+                'pageTitle'         => $this->pageTitle,
+                'backUrl'           => $this->getBackUrl()
             )
         );
         $assigns['indexContent'] = $this->render('/admin/widgets/imageUploader/_index', $assigns);
-        return $this->render('images', $assigns);
+        return $this->render($this->imagesTemplatePath, $assigns);
     }
 
     public function uploadImage()

@@ -22,14 +22,14 @@
             $new.insertAfter($(this).closest(".row"));
             if ($(this).hasClass('many')) {
                 $new.css('display', 'none').slideDown();
-                {% if isSettingModel %}
+                {% if isSettingModel is defined and isSettingModel %}
                 $('#newRow-'+$(this).data('setting_name')).data('setting_id', $(this).data('setting_id'));
                 {% endif %}
                 $(this).attr('disabled', 'disabled');
             }
             else {
                 $new.css('display', 'none');
-                {% if isSettingModel %}
+                {% if isSettingModel is defined and isSettingModel %}
                 $('#newRow-'+$(this).data('setting_name')).data('setting_id', $(this).data('setting_id'));
                 {% endif %}
                 $(this).attr('disabled', 'disabled');
@@ -42,7 +42,7 @@
     function uploadSeparately(el)
     {
         var settingName = $(el).closest('.row').attr('id').replace('newRow-', '');
-        {% if isSettingModel %}
+        {% if isSettingModel is defined and isSettingModel %}
         insertNewRow(settingName, $(el).closest('.row').data('setting_id'));
         {% else %}
         {% set instanceImage = attribute(_context, instanceName) %}
@@ -203,7 +203,7 @@
             }
         }
 
-        {% if isSettingModel %}
+        {% if isSettingModel is defined and isSettingModel %}
         var fieldName = 'value';
         {% else %}
         var fieldName = settingName;

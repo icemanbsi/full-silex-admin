@@ -7,7 +7,7 @@
                     <h5 class="bold text-info strong positionTitle">{{ _imageSetting._config.adminName }} Position: <span class="position">{{ _imagePos }}</span></h5>
                 </div>
                 <div class="col-xs-6 text-right">
-                    {% if isSettingModel is defined %}
+                    {% if isSettingModel is defined and isSettingModel %}
                         {% set instance = attribute(instances, _imageSettingName) %}
                         <a href="{{ baseUrl(imageMovePath.route, {method:imageMovePath.method, id: instance.id, direction: "up", position:_imagePos, setting:_imageSettingName, field:'value'}) }}" class="btn btn-primary btn-small btnMoveUp hasPosition" title="{{ "Move Up"|trans }}"><i class="fa fa-arrow-up"></i></a>
                         <a href="{{ baseUrl(imageMovePath.route, {method:imageMovePath.method, id: instance.id, direction: "down", position:_imagePos, setting:_imageSettingName, field:'value'}) }}" class="btn btn-primary btn-small btnMoveDown hasPosition" title="{{ "Move Down"|trans }}"><i class="fa fa-arrow-down"></i></a>

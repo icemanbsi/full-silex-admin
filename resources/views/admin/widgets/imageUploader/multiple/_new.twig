@@ -1,4 +1,4 @@
-<div class="row" id="newRow-{$_imageSettingName}">
+<div class="row" id="newRow-{{ _imageSettingName }}">
     <div class="col-sm-6">
         <form enctype="multipart/form-data" method="POST" action="{{ baseUrl(imageUploadPath.route, {method: imageUploadPath.method}) }}">
             {% if isSettingModel %}
