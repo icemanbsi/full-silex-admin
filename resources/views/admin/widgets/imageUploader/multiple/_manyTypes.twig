@@ -21,14 +21,18 @@
                 </div>
             </div>
             <div class="row">
-                {{ set i = 0 }}
+                {% set i = 0 %}
                 {% for typeName, type in _imageSetting.types %}
                     <div class="col-sm-3 imageFormContainer" {% if i % 4 == 0 %}style="margin-left: 0;"{% endif %}>
                         <label class="text-primary bold text-uppercase m-b-5">{{ typeName }}</label>
                         <div class="text-info m-b-10">{{ type.description }}</div>
-                        {% include "admin/widgets/imageUploader/_imageForm.twig" with {group: _imageSettingName ~ '_' ~ _imagePos, _image=_image[typeName], type: type, typeName: typeName, _imageSetting: _imageSetting, _imageSettingName:_imageSettingName, position:_imagePos} %}
+                        {% if _image[typeName] is defined %}
+                            {% include "admin/widgets/imageUploader/_imageForm.twig" with {group: _imageSettingName ~ '_' ~ _imagePos, _image:_image[typeName], type: type, typeName: typeName, _imageSetting: _imageSetting, _imageSettingName:_imageSettingName, position:_imagePos} %}
+                        {% else %}
+                            {% include "admin/widgets/imageUploader/_imageForm.twig" with {group: _imageSettingName ~ '_' ~ _imagePos, type: type, typeName: typeName, _imageSetting: _imageSetting, _imageSettingName:_imageSettingName, position:_imagePos} %}
+                        {% endif %}
                     </div>
-                    {{ set i = i+1 }}
+                    {% set i = i + 1 %}
                 {% endfor %}
             </div>
         </div>

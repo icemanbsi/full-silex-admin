@@ -167,7 +167,7 @@ trait ImageUploader
                                         $position = $this->request->get("position");
                                         $options = array_merge($options, $imageSetting['types'][$type]);
 
-                                        $oldFile = $this->app->getPublicBasePath().$instanceImages[$position][$type];
+                                        $oldFile = $this->app->getPublicBasePath().(!empty($instanceImages[$position]) && !empty($instanceImages[$position][$type]) ? $instanceImages[$position][$type] : '');
                                         try {
                                             $path = $this->processTempImage($tmp, $options, $oldFile);
                                             $instanceImages[$position][$type] = $path;
@@ -197,7 +197,7 @@ trait ImageUploader
                                             $instanceImages = array();
                                         }
                                         $options = array_merge($options, $imageSetting['types'][$type]);
-                                        $oldFile = $this->app->getPublicBasePath().$instanceImages[$type];
+                                        $oldFile = $this->app->getPublicBasePath().(!empty($instanceImages[$type]) ? $instanceImages[$type] : '');
                                         try {
                                             $path = $this->processTempImage($tmp, $options, $oldFile);
                                             $instanceImages[$type] = $path;
