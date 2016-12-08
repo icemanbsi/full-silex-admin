@@ -14,7 +14,7 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 {% block topLeftActionBar %}
-                                    {% if action == "create" %}
+                                    {% if action != "create" %}
                                         <a href="{{ baseUrl("admin/" ~ controllerName ~ "/images") }}" class="btn btn-primary"><i class="fa fa-image"></i> {{ "Image Manager"|trans }}</a>
                                     {% endif %}
                                 {% endblock %}
@@ -23,7 +23,7 @@
 
                                 {% block topRightActionBar %}
                                     <input type="hidden" name="{{ instanceName }}[is_active]" id="isActive" value="{{ instance.is_active }}"/>
-                                    {% if action == "create" %}
+                                    {% if action != "create" %}
                                         {% if instance.is_active %}
                                             <a class="btn btn-danger" id="btnSuspend"><i class="pg-power m-r-10"></i>Suspend</a>
                                         {% else %}
