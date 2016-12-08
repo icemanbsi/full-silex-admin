@@ -14,7 +14,7 @@
         </button>
         <ul class="dropdown-menu profile-dropdown" role="menu">
             <li><a href="{{ baseUrl("admin/admins/edit", {id: admin.id}) }}"><i class="pg-settings_small"></i> {{ "Edit Profile"|trans }}</a>
-            <li><a href="{{ baseUrl("", {method: "index"}) }}"><i class="pg-settings_small"></i> {{ "My Settings"|trans }}</a>
+            {#<li><a href="{{ baseUrl("", {method: "index"}) }}"><i class="pg-settings_small"></i> {{ "My Settings"|trans }}</a>#}
             </li>
             <li class="bg-master-lighter">
                 <a href="{{ baseUrl("admin/admins/logout") }}" class="clearfix">

@@ -193,7 +193,7 @@ class AdminsController extends CRUDController
         /** @var \FullSilexAdmin\Models\Repositories\AdminRepository $adminRepository */
         $adminRepository = $this->app->getRepository("admin");
         $adminRepository->logout();
-        return $this->app->redirect($this->app->url("admins", array("method" => "login")));
+        return $this->app->redirect($this->app->url("admin/admins", array("method" => "login")));
     }
 
     public function forgetPassword(){
