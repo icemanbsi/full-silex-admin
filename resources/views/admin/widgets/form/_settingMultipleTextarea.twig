@@ -1,0 +1,56 @@
+{#
+
+Options :
+    - customTitle (req)     : title or field name
+    - settingName (req)     : to set field name
+    - required (opt)        : if this field is required
+    - readOnly (opt)        : if this field is readonly
+    - help (opt)            : help text - e.g. "25/12/2013"
+    - enableEditor (opt)    : enable text editor
+
+#}
+
+{% set setting = (attribute(_context, settingName) is defined ? attribute(_context, settingName) : "") %}
+
+{% if customTitle is not defined or customTitle is empty %}
+    {% set customTitle = setting.description|capitalize %}
+{% endif %}
+
+{% if customClass is not defined or customClass is empty %}
+    {% if required is defined %}
+        {% set customClass = 'validate[required, maxSize[255]]' %}
+    {% else %}
+        {% set customClass = 'validate[maxSize[255]]' %}
+    {% endif %}
+{% endif %}
+
+<div class="block-fluid tabbable">
+
+    <ul class="nav nav-tabs">
+        {% for key, lang in languages %}
+            <li {% if key == language %}class="active"{% endif %}>
+                <a data-toggle="tab" href="#{{ settingName }}-{{ key }}">{{ lang }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content" style="padding: 0 0 15px;">
+        {% for key, lang in languages %}
+            <div class="tab-pane {% if key == language %}active{% endif %}" id="{{ settingName }}-{{ key }}">
+
+                <div class="form-group {% if enableEditor is not defined %}form-group-default{% endif %} {% if required is defined %}required{% endif %}">
+                    <label for="{{ settingName }}_{{ key }}">{% if customTitle is defined and customTitle is not empty %}{{ customTitle|capitalize }}{% else %}{{ setting.description|capitalize }}{% endif %}</label>
+                    {% if help is defined and help != "" %}
+                        <span class="help">{{ help }}</span>
+                    {% endif %}
+
+                    {% if enableEditor is defined %}<div class="summernote-wrapper">{% endif %}
+                        <textarea name="{{ settingName }}[{{ key }}]" id="{{ settingName }}_{{ key }}" style="height: 100px; resize: vertical; line-height: 20px; margin-top: -1px;" class="form-control {% if required is defined %}validate[required]{% endif %} {% if enableEditor is defined %}summernote{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %}>{{ setting.value|modelTranslator(key)|escape }}</textarea>
+                        {% if enableEditor is defined %}</div>{% endif %}
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+
+</div>

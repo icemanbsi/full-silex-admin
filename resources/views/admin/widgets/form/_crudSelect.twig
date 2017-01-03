@@ -4,6 +4,7 @@ Options :
     - customTitle (req)     : title or field name
     - columnName (req)      : to set field name
     - required (opt)        : if this field is required
+    - readOnly (opt)        : if this field is readonly
     - help (opt)            : help text - e.g. "25/12/2013"
 
 #}
@@ -14,9 +15,22 @@ Options :
     {% if help is defined and help != "" %}
         <span class="help">{{ help }}</span>
     {% endif %}
-    <select name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control cs-select cs-skin-slide" data-init-plugin="cs-select">
+
+    {% if readOnly is not defined %}
+        <select name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control cs-select cs-skin-slide" data-init-plugin="cs-select">
+            {% for option in options %}
+                <option value="{{ option.value }}" {% if option.value == value %}selected{% endif %}>{{ option.text }}</option>
+            {% endfor %}
+        </select>
+    {% else %}
+        <input type="hidden" name="{{ instanceName }}[{{ columnName }}]" value="{{ value|escape }}" />
+
+        {% set selectedOptionText = '' %}
         {% for option in options %}
-        <option value="{{ option.value }}" {% if option.value == value %}selected{% endif %}>{{ option.text }}</option>
+            {% if option.value == value %}
+                {% set selectedOptionText = option.text %}
+            {% endif %}
         {% endfor %}
-    </select>
+        <input type="text" class="form-control" readonly="readonly" value="{{ selectedOptionText }}" />
+    {% endif %}
 </div>

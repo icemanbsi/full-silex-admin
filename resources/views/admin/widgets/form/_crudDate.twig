@@ -3,6 +3,7 @@
 options :
     - columnName (req)      : to set field name
     - customTitle (opt)     : title or field name
+    - customFormat (opt)    : to format date
     - required (opt)        : if this field is required
     - readOnly (opt)        : if this field is readonly
     - help (opt)            : help text - e.g. "25/12/2013"
@@ -12,6 +13,10 @@ options :
     {% set customTitle = columnName|capitalize %}
 {% endif %}
 
+{% if customFormat is not defined or customFormat is empty %}
+    {% set customFormat = 'Y-m-d H:i:s' %}
+{% endif %}
+
 {% set instance = attribute(_context, instanceName) %}
 {% set value = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : now) %}
 <div class="form-group form-group-default {% if required is defined %}required{% endif %} input-group">
@@ -19,8 +24,8 @@ options :
     {% if help is defined and help != "" %}
         <span class="help">{{ help }}</span>
     {% endif %}
-    
-    <input type="text" name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" value="{{ value|date('Y-m-d H:i:s') }}" class="form-control datepicker {{ customClass }}" {% if readOnly is defined %}readonly="readonly"{% endif %} placeholder="Pick a date"/>
+
+    <input type="text" name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" value="{{ value|date(customFormat) }}" class="form-control {% if readOnly is not defined %}datepicker{% endif %} {% if customClass is defined %}{{ customClass }}{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %} placeholder="Pick a date"/>
 
     <span class="input-group-addon">
         <i class="fa fa-calendar"></i>

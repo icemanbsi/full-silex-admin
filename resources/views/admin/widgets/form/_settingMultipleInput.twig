@@ -1,0 +1,54 @@
+{#
+
+Options :
+    - customTitle (req)     : title or field name
+    - settingName (req)     : to set field name
+    - required (opt)        : if this field is required
+    - type (opt)            : available type is text(default), datepicker, timepicker, password
+    - readOnly (opt)        : if this field is readonly
+    - help (opt)            : help text - e.g. "25/12/2013"
+
+#}
+
+{% set setting = (attribute(_context, settingName) is defined ? attribute(_context, settingName) : "") %}
+
+{% if customTitle is not defined or customTitle is empty %}
+    {% set customTitle = setting.description|capitalize %}
+{% endif %}
+
+{% if customClass is not defined or customClass is empty %}
+    {% if required is defined %}
+        {% set customClass = 'validate[required, maxSize[255]]' %}
+    {% else %}
+        {% set customClass = 'validate[maxSize[255]]' %}
+    {% endif %}
+{% endif %}
+
+<div class="block-fluid tabbable">
+
+    <ul class="nav nav-tabs">
+        {% for key, lang in languages %}
+            <li {% if key == language %}class="active"{% endif %}>
+                <a data-toggle="tab" href="#{{ settingName }}-{{ key }}">{{ lang }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content" style="padding: 0 0 15px;">
+        {% for key, lang in languages %}
+            <div class="tab-pane {% if key == language %}active{% endif %}" id="{{ settingName }}-{{ key }}">
+
+                <div class="form-group form-group-default {% if required is defined %}required{% endif %}">
+                    <label for="{{ settingName }}_{{ key }}">{{ customTitle }}</label>
+                    {% if help is defined and help != "" %}
+                        <span class="help">{{ help }}</span>
+                    {% endif %}
+
+                    <input type="text" name="{{ settingName }}[{{ key }}]" id="{{ settingName }}_{{ key }}" class="form-control {{ customClass }}" value="{{ setting.value|modelTranslator(key)|escape }}" {% if readOnly is defined %}readonly="readonly"{% endif %}/>
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
