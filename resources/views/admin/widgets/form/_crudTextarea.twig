@@ -1,0 +1,21 @@
+{#
+options :
+    - columnName (req)      : to set field name
+    - customTitle (opt)     : title or field name
+    - required (opt)        : if this field is required
+    - readOnly (opt)        : if this field is readonly
+    - help (opt)            : help text - e.g. "25/12/2013"
+#}
+{% if customTitle is not defined or customTitle is empty %}
+    {% set customTitle = columnName|capitalize %}
+{% endif %}
+
+{% set instance = attribute(_context, instanceName) %}
+{% set value = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : '') %}
+<div class="form-group form-group-default {% if required is defined %}required{% endif %}">
+    <label for="{{ instanceName }}_{{ columnName }}">{{ customTitle }}</label>
+    {% if help is defined and help != "" %}
+        <span class="help">{{ help }}</span>
+    {% endif %}
+    <textarea name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if required is defined %}validate[required]{% endif %}" {% if readOnly is defined %}readonly="readonly"{% endif %} style="height: 120px;">{{ value|escape }}</textarea>
+</div>

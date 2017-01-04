@@ -1,0 +1,83 @@
+{% set instance = attribute(_context, instanceName) %}
+{% set value = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : '') %}
+<div class="form-group form-group-default input-group">
+    <label for="location">Search Address</label>
+    <input id="location" type="text" class="form-control" />
+    <span class="input-group-addon" style="cursor: pointer;"><span class="fa fa-search"></span></span>
+</div>
+
+<div id="map_canvas" style="width: 100%; height: 400px;"></div>
+<input type="hidden" id="{{ instanceName }}_{{ columnName }}_latitude" name="{{ instanceName }}[{{ columnName }}][latitude]" value="{{ value|modelTranslator('latitude')|escape }}"/>
+<input type="hidden" id="{{ instanceName }}_{{ columnName }}_longitude" name="{{ instanceName }}[{{ columnName }}][longitude]" value="{{ value|modelTranslator('longitude')|escape }}"/>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1hd5aevxAXr8m3MOWYb2KpeAsQHMwccs"></script>
+<script src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js"></script>
+<script>
+    var map = null;
+    var markerArray = []; //create a global array to store markers
+
+    var inputLat = $('#{{ instanceName }}_{{ columnName }}_latitude');
+    var inputLng = $('#{{ instanceName }}_{{ columnName }}_longitude');
+
+    var latitude = inputLat.val();
+    var longitude = inputLng.val();
+
+    function initialize() {
+        var myOptions = {
+            zoom: 15,
+            center: new google.maps.LatLng(latitude, longitude),
+            mapTypeControl: false,
+            mapTypeControlOptions: {
+                style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+            },
+            navigationControl: false,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+        google.maps.event.addListener(map, 'click', function(event) {
+            createMarker(new google.maps.LatLng(event.latLng.lat(), event.latLng.lng()), event.latLng.lat() + ', ' + event.latLng.lng());
+        });
+        createMarker(new google.maps.LatLng(latitude, longitude));
+    }
+
+    function createMarker(latlng, myTitle) {
+        var marker = new google.maps.Marker({
+            position: latlng,
+            map: map,
+            title: "Location",
+            zIndex: Math.round(latlng.lat() * -100000) << 5
+        });
+
+        for(var i=0; i<markerArray.length; i++){
+            markerArray[i].setMap(null);
+        }
+        markerArray.push(marker); //push local var marker into global array
+
+        inputLat.val( latlng.lat() );
+        inputLng.val( latlng.lng() );
+    }
+
+    window.onload = initialize;
+
+    $('#location').change(function(){
+        $.ajax({
+            url : 'http://maps.googleapis.com/maps/api/geocode/json?',
+            type: 'GET',
+            data: {
+                address: $(this).val(),
+                sensor: false
+            },
+            success : function(response){
+                if(response.results.length > 0){
+                    var location = new google.maps.LatLng(response.results[0].geometry.location.lat, response.results[0].geometry.location.lng);
+                    createMarker(location, response.results[0].geometry.location.lat + ', ' + response.results[0].geometry.location.lng);
+                    map.setCenter(location);
+                }
+            },
+            error: function(){
+
+            }
+        });
+    });
+</script>
