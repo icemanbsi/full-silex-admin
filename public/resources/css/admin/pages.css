@@ -12443,7 +12443,8 @@ Main components
   }
   body .header .header-inner {
     height: 48px;
-    text-align: center;
+    text-align: left;
+    padding-left: 30px;
   }
   body .header .header-inner .toggle-email-sidebar {
     font-size: 16px;
