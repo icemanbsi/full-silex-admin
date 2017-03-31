@@ -146,7 +146,7 @@ form{
       left: 70px;
       right:0;
       top: 60px;
-      z-index: 99;
+      z-index: 999;
       @include prefixed(transition, all 0.5s);
     }
   }
