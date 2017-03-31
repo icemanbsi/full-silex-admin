@@ -432,7 +432,7 @@ class CRUDController extends BaseController
                 $message = $e->getMessage();
                 // When message is unrelated to instance validation, instance
                 // has no error, but error message is not empty.
-                if (!empty($message) && $instance->errors->is_emtpy()) {
+                if (!empty($message) && $instance->errors->is_empty()) {
                     $instance->add("", $message);
                 }
                 $this->app->log("error happened when updating from CRUDController (model ".$this->model()."): " . $message);
@@ -496,7 +496,7 @@ class CRUDController extends BaseController
                     $message = $e->getMessage();
                     // When message is unrelated to instance validation, instance
                     // has no error, but error message is not empty.
-                    if (!empty($message) && $instance->errors->is_emtpy()) {
+                    if (!empty($message) && $instance->errors->is_empty()) {
                         $instance->add("", $message);
                     }
                     $this->app->log("error happened when updating from CRUDController (model ".$this->model()."): " . $message);
@@ -539,7 +539,7 @@ class CRUDController extends BaseController
                 $message = $e->getMessage();
                 // When message is unrelated to instance validation, instance
                 // has no error, but error message is not empty.
-                if (!empty($message) && $instance->errors->is_emtpy()) {
+                if (!empty($message) && $instance->errors->is_empty()) {
                     $instance->add("", $message);
                 }
                 $this->app->log("Cannot delete data : " . $e->getMessage());
