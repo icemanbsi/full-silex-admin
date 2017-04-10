@@ -1,0 +1,55 @@
+{#
+
+options :
+    - columnName (req)      : to set field name
+    - label (req)           : item name in singular form
+    - templateFile (req)    : path to template file
+
+#}
+{% if customTitle is not defined or customTitle is empty %}
+    {% set customTitle = columnName|capitalize %}
+{% endif %}
+
+{% set instance = attribute(_context, instanceName) %}
+{% set rawValue = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : '') %}
+
+<div id="{{ columnName|lower }}Container">
+    {% set values = rawValue|json_decode %}
+
+    {% set count = 0 %}
+    {% for key, value in values %}
+        {% include templateFile %}
+        {% set count = count+1 %}
+    {% endfor %}
+</div>
+
+<button type="button" class="btn btn-success add-{{ label|lower }}-button"><span class="fa fa-plus m-r-10"></span>Add {{ label|title }}</button>
+
+
+<script type="text/template" id="new{{ label|title }}Template">
+    {% set count = "%" ~ label|lower ~ "%" %}
+
+    {% set key = "" %}
+    {% set value= "" %}
+    {% include templateFile %}
+</script>
+
+<script type="text/javascript">
+    var {{ label|lower }}Count = {{ values|length - 1 }};
+    var {{ columnName|lower }}Container = $('#{{ columnName|lower }}Container');
+
+    $('.add-{{ label|lower }}-button').click(function(){
+        console.log('addbroo');
+        var template = $('#new{{ label|title }}Template').html();
+        var templateIndexed = template.replace(/\%{{ label|lower }}/g, ++{{ label|lower }}Count);
+        {{ columnName|lower }}Container.append( templateIndexed );
+    });
+
+    {{ columnName|lower }}Container.on("click", ".remove-{{ label|lower }}-button", function(){
+        $(this).closest('.{{ label|lower }}').remove();
+    });
+
+    {{ columnName|lower }}Container.sortable({
+        items: "> .{{ label|lower }}"
+    }).disableSelection();
+</script>
