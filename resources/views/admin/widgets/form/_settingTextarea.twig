@@ -9,7 +9,7 @@ Options :
 
 #}
 {% set setting = (attribute(_context, settingName) is defined ? attribute(_context, settingName) : "") %}
-<div class="form-group {% if enableEditor is not defined %}form-group-default{% endif %} {% if required is defined %}required{% endif %}">
+<div class="form-group {% if enableEditor is defined %}b-a b-grey bg-white p-t-10 p-l-10 p-r-10 p-b-5{% else %}form-group-default{% endif %} {% if required is defined %}required{% endif %}">
     <label for="{{ settingName }}">{% if customTitle is defined and customTitle is not empty %}{{ customTitle|capitalize }}{% else %}{{ setting.description|capitalize }}{% endif %}</label>
     {% if help is defined and help != "" %}
         <span class="help">{{ help }}</span>
