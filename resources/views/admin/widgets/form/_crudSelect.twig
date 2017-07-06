@@ -19,7 +19,15 @@ Options :
     {% if readOnly is not defined %}
         <select name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control cs-select cs-skin-slide" data-init-plugin="cs-select">
             {% for option in options %}
-                <option value="{{ option.value }}" {% if option.value == value %}selected{% endif %}>{{ option.text }}</option>
+                {% if option.value is iterable %}
+                    <optgroup label="{{ option.text }}">
+                        {% for opt in option.value %}
+                            <option value="{{ opt.value }}" {% if opt.value == value %}selected{% endif %}>{{ opt.text }}</option>
+                        {% endfor %}
+                    </optgroup>
+                {% else %}
+                    <option value="{{ option.value }}" {% if option.value == value %}selected{% endif %}>{{ option.text }}</option>
+                {% endif %}
             {% endfor %}
         </select>
     {% else %}
