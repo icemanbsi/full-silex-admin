@@ -17,7 +17,7 @@ Options :
     {% endif %}
 
     {% if readOnly is not defined %}
-        <select name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control cs-select cs-skin-slide" data-init-plugin="cs-select">
+        <select name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if select2 is not defined %}cs-select cs-skin-slide{% endif %}" data-init-plugin="{% if select2 is not defined %}cs-select{% else %}select2{% endif %}">
             {% for option in options %}
                 {% if option.value is iterable %}
                     <optgroup label="{{ option.text }}">
