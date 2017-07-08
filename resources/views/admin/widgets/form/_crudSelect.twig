@@ -6,6 +6,8 @@ Options :
     - required (opt)        : if this field is required
     - readOnly (opt)        : if this field is readonly
     - help (opt)            : help text - e.g. "25/12/2013"
+    - multiple (opt)        : multiple selection
+    - select2 (opt)         : use select2 plugin instead of cs-select
 
 #}
 {% set instance = attribute(_context, instanceName) %}
@@ -17,7 +19,7 @@ Options :
     {% endif %}
 
     {% if readOnly is not defined %}
-        <select name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if select2 is not defined %}cs-select cs-skin-slide{% endif %}" data-init-plugin="{% if select2 is not defined %}cs-select{% else %}select2{% endif %}">
+        <select name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if select2 is not defined %}cs-select cs-skin-slide{% endif %}" data-init-plugin="{% if select2 is not defined %}cs-select{% else %}select2{% endif %}" {% if multiple is defined %}multiple="multiple"{% endif %}>
             {% for option in options %}
                 {% if option.value is iterable %}
                     <optgroup label="{{ option.text }}">
