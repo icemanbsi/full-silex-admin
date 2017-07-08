@@ -8,6 +8,7 @@ Options :
     - help (opt)            : help text - e.g. "25/12/2013"
     - multiple (opt)        : multiple selection
     - select2 (opt)         : use select2 plugin instead of cs-select
+    - multiselect (opt)     : use multiselect plugin instead of select2 or cs-select (multiple sould be enable)
 
 #}
 {% set instance = attribute(_context, instanceName) %}
@@ -22,7 +23,7 @@ Options :
     {% endif %}
 
     {% if readOnly is not defined %}
-        <select name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if select2 is not defined %}cs-select cs-skin-slide{% endif %}" data-init-plugin="{% if select2 is not defined %}cs-select{% else %}select2{% endif %}" {% if multiple is defined %}multiple="multiple"{% endif %}>
+        <select name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if select2 is not defined and multiselect is not defined %}cs-select cs-skin-slide{% elseif multiselect is defined %}multiselect{% endif %}" data-init-plugin="{% if select2 is not defined and multiselect is not defined%}cs-select{% elseif select2 is defined %}select2{% endif %}" {% if multiple is defined %}multiple="multiple"{% endif %}>
             {% for option in options %}
                 {% if option.value is iterable %}
                     <optgroup label="{{ option.text }}">
