@@ -18,7 +18,7 @@ options :
 {% endif %}
 
 {% set instance = attribute(_context, instanceName) %}
-{% set value = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : now) %}
+{% set value = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : "now") %}
 <div class="form-group form-group-default {% if required is defined %}required{% endif %} input-group">
     <label for="{{ instanceName }}_{{ columnName }}">{{ customTitle }}</label>
     {% if help is defined and help != "" %}
