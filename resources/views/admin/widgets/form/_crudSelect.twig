@@ -6,10 +6,16 @@ Options :
     - required (opt)        : if this field is required
     - readOnly (opt)        : if this field is readonly
     - help (opt)            : help text - e.g. "25/12/2013"
+    - multiple (opt)        : multiple selection
+    - select2 (opt)         : use select2 plugin instead of cs-select
+    - multiselect (opt)     : use multiselect plugin instead of select2 or cs-select (multiple sould be enable)
 
 #}
 {% set instance = attribute(_context, instanceName) %}
 {% set value = (attribute(instance, columnName) is defined ? attribute(instance, columnName) : '') %}
+{% if multiple is defined and value is not iterable %}
+    {% set value = value|split(',') %}
+{% endif %}
 <div class="form-group form-group-default {% if required is defined %}required{% endif %}">
     <label for="{{ instanceName }}_{{ columnName }}">{% if customTitle is defined and customTitle is not empty %}{{ customTitle|capitalize }}{% else %}{{ columnName|capitalize }}{% endif %}</label>
     {% if help is defined and help != "" %}
@@ -17,9 +23,17 @@ Options :
     {% endif %}
 
     {% if readOnly is not defined %}
-        <select name="{{ instanceName }}[{{ columnName }}]" id="{{ instanceName }}_{{ columnName }}" class="form-control cs-select cs-skin-slide" data-init-plugin="cs-select">
+        <select name="{{ instanceName }}[{{ columnName }}]{% if multiple is defined %}[]{% endif %}" id="{{ instanceName }}_{{ columnName }}" class="form-control {% if select2 is not defined and multiselect is not defined %}cs-select cs-skin-slide{% elseif multiselect is defined %}multiselect{% endif %}" data-init-plugin="{% if select2 is not defined and multiselect is not defined%}cs-select{% elseif select2 is defined %}select2{% endif %}" {% if multiple is defined %}multiple="multiple"{% endif %}>
             {% for option in options %}
-                <option value="{{ option.value }}" {% if option.value == value %}selected{% endif %}>{{ option.text }}</option>
+                {% if option.value is iterable %}
+                    <optgroup label="{{ option.text }}">
+                        {% for opt in option.value %}
+                            <option value="{{ opt.value }}" {% if (multiple is defined and opt.value in value) or opt.value == value %}selected{% endif %}>{{ opt.text }}</option>
+                        {% endfor %}
+                    </optgroup>
+                {% else %}
+                    <option value="{{ option.value }}" {% if (multiple is defined and option.value in value) or option.value == value %}selected{% endif %}>{{ option.text }}</option>
+                {% endif %}
             {% endfor %}
         </select>
     {% else %}
@@ -27,8 +41,11 @@ Options :
 
         {% set selectedOptionText = '' %}
         {% for option in options %}
-            {% if option.value == value %}
-                {% set selectedOptionText = option.text %}
+            {% if (multiple is defined and option.value in value) or option.value == value %}
+                {% if selectedOptionText != "" %}
+                    {% set selectedOptionText = selectedOptionText + ", " %}
+                {% endif %}
+                {% set selectedOptionText = selectedOptionText + option.text %}
             {% endif %}
         {% endfor %}
         <input type="text" class="form-control" readonly="readonly" value="{{ selectedOptionText }}" />

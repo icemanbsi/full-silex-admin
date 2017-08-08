@@ -398,6 +398,14 @@ function UpdateSelectFxPlugin($element){
     
     $('.panel-collapse label').on('click', function(e){
         e.stopPropagation();
-    })
+    });
+
+    function initMultiselect(){
+        $(".multiselect").multiSelect({});
+    }
+    $(document).on("changed", function(){
+        initMultiselect();
+    });
+    initMultiselect();
     
 })(window.jQuery);
