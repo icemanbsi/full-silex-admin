@@ -118,7 +118,7 @@ trait ImageUploader
                                 'resultDir' => $fullPath,
                                 'noImagick' => $this->app->config('noImagick'),
                                 'imagickProgressive' => $this->app->config('imagickProgressive'),
-                                'outputFilename' => str_replace(" ", "-", $name)
+                                'outputFilename' => str_replace(" ", "-", preg_replace('/[^a-zA-Z0-9 \-.]/', '', $name))
                             );
                             $instanceImages = $instance->$imageFieldName;
                             if (is_string($instanceImages) && (isset($imageSetting["types"]) || $imageSetting["_config"]["multiple"])) {
@@ -132,7 +132,7 @@ trait ImageUploader
                                     $newInstanceImage = array();
                                     foreach($imageSetting['types'] as $key => $typeOptions) {
                                         $options = array_merge($options, $imageSetting['types'][$key]);
-                                        $options['outputFilename'] = str_replace(" ", "-", $imageName) .'-'.$key.'.'.$ext;
+                                        $options['outputFilename'] = str_replace(" ", "-", preg_replace('/[^a-zA-Z0-9 \-.]/', '', $imageName)) .'-'.$key.'.'.$ext;
                                         try {
                                             $path = $this->processTempImage($tmp, $options);
                                             $newInstanceImage[$key] = $path;
