@@ -758,17 +758,23 @@ class CRUDController extends BaseController
     }
 
     protected function setFields( $array ) {
+        $firstColumns = $this->firstColumn();
+
         //set columns
         $this->columns   = $this->setupSortable ? array($this->dragField) : array();
-        $this->columns[] = 'Id';
+        $this->columns[] = isset( $firstColumns['column'] ) ? $firstColumns['column'] : $firstColumns['field'];
 
         //set fields
         $this->dtsFields    = $this->setupSortable ? array(array('db' => $this->dragField, 'dt' => 0, 'prefix' => 't')) : array();
         $this->dtsFields[]  = array(
-            'db'        => $this->primaryKey,
+            'db'        => $firstColumns["field"],
             'dt'        => $this->setupSortable ? 1 : 0,
-            'prefix'    => 't'
+            'prefix'    => isset( $firstColumns['prefix'] ) ? $firstColumns['prefix'] : 't',
+            'rawSql'    => isset( $firstColumns['rawSql'] ) ? $firstColumns['rawSql'] : null,
+            'formatter' => isset( $firstColumns['formatter'] ) ? $firstColumns['formatter'] : null,
+            'filter'    => isset( $firstColumns['filter'] ) ? $firstColumns['filter'] : "like",
         );
+
         foreach($array as $key => $value) {
             //set columns
             $this->columns[] = isset( $value['column'] ) ? $value['column'] : $value['field'];
