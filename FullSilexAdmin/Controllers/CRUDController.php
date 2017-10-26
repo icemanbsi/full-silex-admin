@@ -135,7 +135,7 @@ class CRUDController extends BaseController
                 'rawSql'    => 't.id',
                 'formatter' => function( $value, $array ) {
                     return  '<a title="View" href="'.$this->app->url($this->editPath["route"], array('method' => $this->editPath["method"], 'id' => $value)).'" data-toggle="dialog"><span class="fa fa-pencil"></span></a>
-                                  <a title="Delete" href="'.$this->app->url($this->deletePath["route"], array('method' => $this->editPath["method"], 'id' => $value)).'" data-toggle="dialog"><span class="fa fa-trash"></span></a>';
+                                  <a title="Delete" href="'.$this->app->url($this->deletePath["route"], array('method' => $this->deletePath["method"], 'id' => $value)).'" data-toggle="dialog"><span class="fa fa-trash"></span></a>';
                 })
         );
     }
@@ -162,6 +162,14 @@ class CRUDController extends BaseController
 
 
     // Override these functions if needed
+
+    protected function firstColumn(){
+        return array(
+            'column'    => 'Id',
+            'field'     => $this->primaryKey,
+            'prefix'    => 't'
+        );
+    }
 
     /**
      * Data used in index listing when dataTableServerSide is turned on
@@ -390,11 +398,11 @@ class CRUDController extends BaseController
     public function delete() {
         $instance = $this->findInstance(false);
         if (is_null($instance)) {
-            $assigns = array(
+            $assigns = array_merge($this->setupAssigns($instance), array(
                 'error' => $this->app->trans('instanceNotFound', array('model' => $this->title)),
                 'errorAttributes' => array(),
                 'instance' => $this->instanceName
-            );
+            ));
         }
         else {
             $assigns = $this->setupAssigns($instance);
