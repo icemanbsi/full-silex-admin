@@ -7,7 +7,7 @@
     }
   },
   "require": {
-    "php": "~5.5.0|~5.6.0|~7.0.0",
+    "php": "~5.5.0|~5.6.0|7.*",
     "php-activerecord/php-activerecord": "v1.1.*",
     "icemanbsi/full-silex": "^1.0",
     "ext-mbstring": "*",
