@@ -23,9 +23,9 @@ class AdminRepository extends \FullSilex\Models\Repositories\BaseRepository
                 AdminSession::table()->delete(array('admin_id' => array($admin->id)));
 
                 // when everything ok, regenerate session
-                session_regenerate_id(true);	// change session ID for the current session and invalidate old session ID
+//                session_regenerate_id(true);	// change session ID for the current session and invalidate old session ID
                 $adminId = $admin->id;
-                $sessionId = session_id();
+                $sessionId = $this->app->getSession()->getId();
 
                 $adminsession = $this->app->createModel('adminSession', array("admin_id" => $adminId, "session_id" => $sessionId));
                 $adminsession->save();
@@ -43,5 +43,6 @@ class AdminRepository extends \FullSilex\Models\Repositories\BaseRepository
             $adminSession->delete();
         }
         $this->app->getSession()->remove('adminId');
+        $this->app->getSession()->invalidate();
     }
 }

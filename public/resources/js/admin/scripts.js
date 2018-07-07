@@ -400,12 +400,4 @@ function UpdateSelectFxPlugin($element){
         e.stopPropagation();
     });
 
-    function initMultiselect(){
-        $(".multiselect").multiSelect({});
-    }
-    $(document).on("changed", function(){
-        initMultiselect();
-    });
-    initMultiselect();
-    
 })(window.jQuery);
